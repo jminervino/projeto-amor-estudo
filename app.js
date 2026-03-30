@@ -1,12 +1,13 @@
 /**
- * FelixStudy — lógica do app (multi-matéria, localStorage, modos de estudo)
+ * CarineStudy — lógica do app (multi-matéria, localStorage, modos de estudo)
  * Depende de: MATERIAS em data.js
  */
 
-const STORAGE_KEY = "felixstudy_progress";
+const STORAGE_KEY = "carinestudy_clinica_v1";
+const LEGACY_STORAGE_KEY = "felixstudy_progress";
 
 const MOTIVO_HIT = [
-  "Arrasou! 🐱",
+  "Arrasou, Carine! 💜",
   "Vet aprovada! 💉",
   "Isso aí! 🏆",
   "Mandou bem! ⭐",
@@ -43,17 +44,54 @@ function defaultProgress() {
   };
 }
 
+function materiaIdsSorted() {
+  const M = typeof MATERIAS !== "undefined" ? MATERIAS : {};
+  return Object.keys(M).sort((a, b) => {
+    const oa = M[a].ordem ?? 999;
+    const ob = M[b].ordem ?? 999;
+    if (oa !== ob) return oa - ob;
+    return M[a].nome.localeCompare(M[b].nome, "pt-BR");
+  });
+}
+
+/** Primeira matéria em que dá para estudar (ignora arquivo / em breve). */
+function firstPlayableMateriaId() {
+  const M = typeof MATERIAS !== "undefined" ? MATERIAS : {};
+  const ids = materiaIdsSorted();
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    const m = M[id];
+    if (!m) continue;
+    if (m.apenasMemoria || m.emBreve) continue;
+    return id;
+  }
+  return ids[0] || null;
+}
+
 function loadRoot() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { materias: {}, lastMateria: null };
+    let raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      const oldRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (oldRaw) {
+        const old = JSON.parse(oldRaw);
+        if (old.materias && old.materias.clinicaPeqAnimais) {
+          return {
+            materias: { clinicaPeqAnimais: { ...defaultProgress(), ...old.materias.clinicaPeqAnimais } },
+            lastMateria: "clinicaPeqAnimais",
+          };
+        }
+      }
+      return { materias: {}, lastMateria: firstPlayableMateriaId() };
+    }
     const parsed = JSON.parse(raw);
     if (!parsed.materias) {
-      return { materias: { felinos: { ...defaultProgress(), ...parsed } }, lastMateria: "felinos" };
+      const id = firstPlayableMateriaId();
+      return { materias: id ? { [id]: { ...defaultProgress(), ...parsed } } : {}, lastMateria: id };
     }
     return parsed;
   } catch {
-    return { materias: {}, lastMateria: null };
+    return { materias: {}, lastMateria: firstPlayableMateriaId() };
   }
 }
 
@@ -133,7 +171,7 @@ function applyMateriaTheme(m) {
   const hi = document.getElementById("header-icon");
   const ht = document.getElementById("header-title");
   if (hi) hi.textContent = m.icone || "📚";
-  if (ht) ht.textContent = "FelixStudy";
+  if (ht) ht.textContent = "CarineStudy";
 }
 
 function showView(name) {
@@ -142,26 +180,104 @@ function showView(name) {
     el.classList.toggle("view-active", el.id === `view-${name}`);
   });
   const header = document.getElementById("app-header");
-  const showHeader = name !== "subjects";
-  header.hidden = !showHeader;
+  if (header) header.hidden = name === "subjects";
+  const back = document.getElementById("btn-global-back");
+  if (back) back.hidden = name === "subjects";
+}
+
+function renderPdfChecklist() {
+  const m = getMateria();
+  const ul = document.getElementById("pdf-checklist");
+  if (!ul || !m || !m.topicos) return;
+  ul.innerHTML = "";
+  const entries = Object.entries(m.topicos).sort((a, b) => a[1].localeCompare(b[1], "pt-BR"));
+  entries.forEach(([key, label]) => {
+    const li = document.createElement("li");
+    li.textContent = label;
+    li.dataset.topico = key;
+    ul.appendChild(li);
+  });
 }
 
 function renderSubjects() {
   const grid = document.getElementById("subject-grid");
   if (!grid) return;
   grid.innerHTML = "";
-  Object.keys(MATERIAS).forEach((id) => {
+  const ids = materiaIdsSorted();
+
+  ids.forEach((id) => {
     const m = MATERIAS[id];
+
+    if (m.apenasMemoria) {
+      const arq = document.createElement("article");
+      arq.className = "subject-card subject-card--memory-locked fade-in";
+      arq.setAttribute("role", "group");
+      arq.setAttribute("aria-label", `${m.nome} — arquivo, sem estudo no app`);
+      arq.innerHTML = `
+        <div class="subject-card-lock-badge" aria-hidden="true">
+          <span class="subject-card-lock-icon">🔒</span>
+          <span class="subject-card-lock-text">Arquivo</span>
+        </div>
+        <div class="subject-card-top">
+          <span class="subject-card-icon-wrap" aria-hidden="true">
+            <span class="subject-card-icon subject-card-icon--ghost">${m.icone}</span>
+            <span class="subject-card-mini-lock">🔒</span>
+          </span>
+          <span class="subject-card-name">${escapeHtml(m.nome)}</span>
+        </div>
+        <span class="subject-card-status subject-card-status--done">Prova concluída — só lembrança ✓</span>
+        <p class="subject-card-desc">${escapeHtml(m.descricao)}</p>
+        <p class="subject-card-static-hint">Não é clicável: é só para você ver o que já passou 💜</p>
+      `;
+      grid.appendChild(arq);
+      return;
+    }
+
+    if (m.emBreve) {
+      const fut = document.createElement("article");
+      fut.className = "subject-card subject-card--futuro fade-in";
+      fut.setAttribute("role", "group");
+      fut.setAttribute("aria-label", `${m.nome} — em breve`);
+      fut.innerHTML = `
+        <div class="subject-card-futuro-badge" aria-hidden="true">
+          <span>🔜</span>
+          <span>Em breve</span>
+        </div>
+        <div class="subject-card-top">
+          <span class="subject-card-icon subject-card-icon--futuro">${m.icone}</span>
+          <span class="subject-card-name">${escapeHtml(m.nome)}</span>
+        </div>
+        <p class="subject-card-desc">${escapeHtml(m.descricao)}</p>
+        <p class="subject-card-static-hint">Sem pagamento: só entra conteúdo quando for a vez no calendário.</p>
+      `;
+      grid.appendChild(fut);
+      return;
+    }
+
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "subject-card fade-in";
-    btn.innerHTML = `
+    const classes = ["subject-card", "fade-in"];
+    if (m.provaAtual) classes.push("subject-card--atual");
+    btn.className = classes.join(" ");
+    const topo = `
       <div class="subject-card-top">
         <span class="subject-card-icon">${m.icone}</span>
         <span class="subject-card-name">${escapeHtml(m.nome)}</span>
       </div>
       <p class="subject-card-desc">${escapeHtml(m.descricao)}</p>
     `;
+    if (m.provaAtual) {
+      btn.innerHTML = `
+        <div class="subject-card-atual-badge" aria-hidden="true">
+          <span class="subject-card-atual-pulse"></span>
+          <span>Prova atual — liberada</span>
+        </div>
+        ${topo}
+        <p class="subject-card-hint subject-card-hint--atual">Toque para estudar agora ✨</p>
+      `;
+    } else {
+      btn.innerHTML = topo;
+    }
     btn.addEventListener("click", () => openMateria(id));
     grid.appendChild(btn);
   });
@@ -175,22 +291,27 @@ function escapeHtml(s) {
 
 function openMateria(id) {
   if (!MATERIAS[id]) return;
+  const m = MATERIAS[id];
+  if (m.apenasMemoria || m.emBreve) return;
   state.materiaId = id;
   state.weakOnly = false;
-  applyMateriaTheme(MATERIAS[id]);
+  applyMateriaTheme(m);
+  renderPdfChecklist();
   refreshHome();
+  if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.tap();
   showView("home");
 }
 
 function refreshHome() {
   const m = getMateria();
   if (!m) return;
+  const mid = state.materiaId;
   const p = getProgress();
   const badge = document.getElementById("home-materia-badge");
   const title = document.getElementById("home-title");
   const desc = document.getElementById("home-desc");
   if (badge) badge.textContent = m.nome;
-  if (title) title.textContent = `FelixStudy ${m.icone}`;
+  if (title) title.textContent = `CarineStudy ${m.icone}`;
   if (desc) desc.textContent = m.descricao;
 
   const answered = p.totalRespondidas || 0;
@@ -203,24 +324,50 @@ function refreshHome() {
   document.getElementById("stat-best-streak").textContent = String(p.bestStreak || 0);
 
   const motiv = document.getElementById("home-motivation");
+  const temConteudo =
+    (m.flashcards && m.flashcards.length > 0) || (m.multiplaEscolha && m.multiplaEscolha.length > 0);
   if (motiv) {
-    if (answered === 0) motiv.textContent = "Comece pelo modo que preferir — os casos clínicos focam em tratamentos.";
-    else if (rate >= 80) motiv.textContent = "Ótimo ritmo! Mantenha a revisão dos pontos fracos.";
-    else motiv.textContent = "Cada erro é um mapa do que revisar. Continue!";
+    if (!temConteudo) {
+      motiv.textContent = "Quando o João colocar flashcards/questões aqui, os modos abaixo ligam na hora.";
+    } else if (answered === 0) {
+      motiv.textContent =
+        "Dica: Flash express ou Quiz express primeiro; depois pontos fracos se errar bastante.";
+    } else if (rate >= 80) motiv.textContent = "Ritmo excelente! Fecha com casos clínicos se tiver.";
+    else motiv.textContent = "Errou? Abre o painel de pontos fracos e reforça.";
   }
 
   const weakBtn = document.getElementById("btn-weak-home");
   const errSum = sumWeakErrors(p.weakPoints);
-  if (weakBtn) weakBtn.hidden = errSum < 5;
+  if (weakBtn) weakBtn.hidden = errSum < 3;
 
   const ban = document.getElementById("weak-only-banner");
   if (ban) ban.hidden = !state.weakOnly;
+
+  const emBreve = document.getElementById("home-em-breve");
+  if (emBreve) {
+    const tem =
+      (m.flashcards && m.flashcards.length > 0) ||
+      (m.multiplaEscolha && m.multiplaEscolha.length > 0);
+    emBreve.hidden = tem;
+  }
+
+  const pdfMap = document.getElementById("pdf-map");
+  if (pdfMap) {
+    const temTopicos = m.topicos && Object.keys(m.topicos).length > 0;
+    pdfMap.hidden = !temTopicos;
+  }
+
+  const examTips = document.getElementById("exam-tips-block");
+  if (examTips) examTips.hidden = !m.provaAtual;
 }
 
 function goSubjects() {
   state.materiaId = null;
   state.session = null;
   state.weakOnly = false;
+  const clinica = MATERIAS.clinicaPeqAnimais;
+  if (clinica) applyMateriaTheme(clinica);
+  renderSubjects();
   showView("subjects");
 }
 
@@ -245,7 +392,7 @@ function setProgressBar(id, cur, total) {
 }
 
 /* ---------- Flashcards ---------- */
-function startFlash() {
+function startFlash(options = {}) {
   const m = getMateria();
   if (!m) return;
   let pool = [...m.flashcards];
@@ -256,10 +403,23 @@ function startFlash() {
       return;
     }
   }
-  const items = shuffle(pool);
-  state.session = { type: "flash", items, index: 0, flipped: false };
+  let items = shuffle(pool);
+  const cap = options.limit;
+  if (cap && cap > 0) items = items.slice(0, Math.min(cap, items.length));
+  if (items.length === 0) {
+    alert("Não há flashcards disponíveis.");
+    return;
+  }
+  if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.tap();
+  state.session = { type: "flash", items, index: 0, flipped: false, express: !!cap };
   showView("flash");
   renderFlash();
+}
+
+function startFlashCram() {
+  const m = getMateria();
+  if (!m) return;
+  startFlash({ limit: m.cramFlashN || 18 });
 }
 
 function renderFlash() {
@@ -286,6 +446,7 @@ function renderFlash() {
     if (s.flipped) return;
     s.flipped = true;
     card.classList.add("is-flipped");
+    if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.flip();
     document.getElementById("flash-tap-hint").hidden = true;
     document.getElementById("flash-actions").hidden = false;
   };
@@ -298,15 +459,18 @@ function advanceFlash(knew) {
   if (knew) {
     recordAnswer(true);
     showFeedback("flash-feedback", true);
+    if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.success();
   } else {
     recordAnswer(false);
     registerWeakTopic(item.topico);
     showFeedback("flash-feedback", false);
+    if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.error();
   }
 
   s.index += 1;
   if (s.index >= s.items.length) {
-    endSession("Flashcards concluídos!");
+    const msg = s.express ? `Revisão expressa: ${s.items.length} flashcards ✓` : "Flashcards concluídos!";
+    endSession(msg);
     return;
   }
   const wrap = document.getElementById("flash-card-wrap");
@@ -322,7 +486,7 @@ function shuffleAlts(q) {
   return shuffle(alts);
 }
 
-function startMc() {
+function startMc(options = {}) {
   const m = getMateria();
   if (!m) return;
   let pool = [...m.multiplaEscolha];
@@ -333,13 +497,26 @@ function startMc() {
       return;
     }
   }
-  const items = shuffle(pool).map((q) => ({
+  let items = shuffle(pool).map((q) => ({
     ...q,
     _alts: shuffleAlts(q),
   }));
-  state.session = { type: "mc", items, index: 0, answered: false };
+  const cap = options.limit;
+  if (cap && cap > 0) items = items.slice(0, Math.min(cap, items.length));
+  if (items.length === 0) {
+    alert("Não há questões de múltipla escolha disponíveis.");
+    return;
+  }
+  if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.tap();
+  state.session = { type: "mc", items, index: 0, answered: false, express: !!cap };
   showView("mc");
   renderMc();
+}
+
+function startMcCram() {
+  const m = getMateria();
+  if (!m) return;
+  startMc({ limit: m.cramMcN || 12 });
 }
 
 function renderMc() {
@@ -399,6 +576,10 @@ function onMcPick(isCorrect, btnEl) {
 
   recordAnswer(hit);
   showFeedback("mc-feedback", hit);
+  if (typeof CarineStudyAudio !== "undefined") {
+    if (hit) CarineStudyAudio.success();
+    else CarineStudyAudio.error();
+  }
 
   const exp = document.getElementById("mc-explanation");
   exp.textContent = q.explicacao || "";
@@ -411,7 +592,8 @@ function advanceMc() {
   if (!s || s.type !== "mc") return;
   s.index += 1;
   if (s.index >= s.items.length) {
-    endSession("Múltipla escolha concluída!");
+    const msg = s.express ? `Quiz express: ${s.items.length} questões ✓` : "Múltipla escolha concluída!";
+    endSession(msg);
     return;
   }
   document.getElementById("mc-card").classList.remove("fade-in");
@@ -432,6 +614,7 @@ function startWritten() {
       return;
     }
   }
+  if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.tap();
   state.session = { type: "written", items: shuffle(pool), index: 0, phase: "input" };
   showView("written");
   renderWritten();
@@ -477,10 +660,15 @@ function evalWritten(kind) {
   if (kind === "hit") {
     recordAnswer(true);
     showFeedback("written-feedback", true);
+    if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.success();
   } else {
     recordAnswer(false);
     registerWeakTopic(q.topico);
     showFeedback("written-feedback", false);
+    if (typeof CarineStudyAudio !== "undefined") {
+      if (kind === "partial") CarineStudyAudio.partial();
+      else CarineStudyAudio.error();
+    }
   }
 
   s.index += 1;
@@ -510,6 +698,7 @@ function startCases() {
     }
   }
   const cases = shuffle(pool);
+  if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.tap();
   state.session = {
     type: "cases",
     cases,
@@ -578,10 +767,15 @@ function evalCase(kind) {
   if (kind === "hit") {
     recordAnswer(true);
     showFeedback("cases-feedback", true);
+    if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.success();
   } else {
     recordAnswer(false);
     registerWeakTopic(c.topico);
     showFeedback("cases-feedback", false);
+    if (typeof CarineStudyAudio !== "undefined") {
+      if (kind === "partial") CarineStudyAudio.partial();
+      else CarineStudyAudio.error();
+    }
   }
 
   s.qIndex += 1;
@@ -594,6 +788,7 @@ function evalCase(kind) {
 
 function endSession(msg) {
   state.session = null;
+  if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.complete();
   const modal = document.getElementById("session-end-modal");
   document.getElementById("session-end-title").textContent = "Sessão concluída";
   document.getElementById("session-end-body").textContent = msg;
@@ -697,17 +892,22 @@ function onGlobalBack() {
 /* ---------- Inicialização ---------- */
 function wireEvents() {
   document.getElementById("btn-global-back").addEventListener("click", onGlobalBack);
-  document.getElementById("btn-change-subject").addEventListener("click", () => {
-    if (!confirm("Trocar de matéria?")) return;
-    goSubjects();
-  });
+  const btnChange = document.getElementById("btn-change-subject");
+  if (btnChange) {
+    btnChange.addEventListener("click", () => {
+      if (!confirm("Voltar para escolher outra matéria?")) return;
+      goSubjects();
+    });
+  }
   document.getElementById("btn-weak-home").addEventListener("click", openWeakPanel);
 
   document.querySelectorAll(".mode-card").forEach((btn) => {
     btn.addEventListener("click", () => {
       const mode = btn.getAttribute("data-mode");
       if (mode === "flash") startFlash();
+      else if (mode === "cram-flash") startFlashCram();
       else if (mode === "mc") startMc();
+      else if (mode === "cram-mc") startMcCram();
       else if (mode === "written") startWritten();
       else if (mode === "cases") startCases();
     });
@@ -739,14 +939,16 @@ function init() {
     document.body.innerHTML = "<p>Erro: data.js não carregou.</p>";
     return;
   }
+  if (!Object.keys(MATERIAS).length) {
+    document.body.innerHTML = "<p>Erro: data.js sem matérias.</p>";
+    return;
+  }
+  if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.init();
   wireEvents();
+  const clinica = MATERIAS.clinicaPeqAnimais;
+  if (clinica) applyMateriaTheme(clinica);
   renderSubjects();
   showView("subjects");
-
-  const last = state.root.lastMateria;
-  if (last && MATERIAS[last]) {
-    /* opcional: reabrir última matéria — mantemos tela de matérias para clareza */
-  }
 }
 
 init();

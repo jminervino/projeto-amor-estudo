@@ -2,8 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FelixStudy — App de Estudos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Revisão para prova — Clínica Médica e Terapêutica de Pequenos Animais (PDF). CarineStudy." />
+  <meta name="theme-color" content="#0d9488" />
+  <title>CarineStudy — Clínica Peq. Animais</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -14,28 +16,47 @@
     <header class="app-header" id="app-header" hidden>
       <button type="button" class="btn btn-ghost btn-back" id="btn-global-back" aria-label="Voltar">← Voltar</button>
       <div class="header-brand">
-        <span class="header-icon" id="header-icon">🐱</span>
-        <span class="header-title" id="header-title">FelixStudy</span>
+        <span class="header-icon" id="header-icon">🩺</span>
+        <span class="header-title" id="header-title">CarineStudy</span>
       </div>
       <div class="header-spacer"></div>
     </header>
 
-    <!-- Seleção de matéria -->
     <section id="view-subjects" class="view view-active" aria-label="Escolher matéria">
-      <div class="hero">
-        <h1 class="hero-title">FelixStudy <span class="emoji">🐱</span></h1>
-        <p class="hero-sub">Escolha a matéria para estudar. Você pode adicionar mais matérias em <code class="inline-code">data.js</code>.</p>
+      <div class="hero hero-compact">
+        <h1 class="hero-title">CarineStudy <span class="emoji">💜🩺</span></h1>
+        <p class="hero-sub">Felinos ficam ali como lembrança bonita do que você já conquistou. A Clínica é o foco de agora, em destaque para você estudar tranquila. As outras matérias chegam aos poucos, cada uma no seu tempo — sem cobrança nem pagamento, só o João nutrindo este cantinho ao longo dos dias.</p>
       </div>
       <div class="subject-grid" id="subject-grid"></div>
     </section>
 
-    <!-- Home da matéria -->
     <section id="view-home" class="view" aria-label="Início">
       <div class="hero hero-compact">
-        <p class="badge" id="home-materia-badge">Matéria</p>
-        <h1 class="hero-title" id="home-title">FelixStudy</h1>
+        <p class="badge badge-exam" id="home-materia-badge">PDF — prova</p>
+        <h1 class="hero-title" id="home-title">CarineStudy</h1>
         <p class="hero-sub" id="home-desc"></p>
       </div>
+
+      <p class="weak-banner" id="home-em-breve" hidden>
+        Conteúdo deste módulo ainda vai ser adicionado no app antes da prova — por enquanto é só o “slot” desbloqueado.
+      </p>
+
+      <aside class="exam-tips fade-in" id="exam-tips-block" aria-label="Resumo para a prova">
+        <h2 class="exam-tips-title">⚡ Antes da prova (só PDF)</h2>
+        <ul class="exam-tips-list">
+          <li><strong>Exame:</strong> anamnese ~50% · físico ~35% · complementares ~15%</li>
+          <li><strong>Pulmão:</strong> líquido <em>inflamatório</em> = pneumonia · <em>não inflamatório</em> = edema</li>
+          <li><strong>ICC:</strong> esquerda → pulmão; direita → fígado, ascite, membros pélvicos</li>
+          <li><strong>Convulsão aguda:</strong> midazolam 1ª opção · fenobarbital crônico</li>
+          <li><strong>ATE gato:</strong> butorfanol + heparina + AAS + repouso</li>
+        </ul>
+      </aside>
+
+      <details class="pdf-map fade-in" id="pdf-map">
+        <summary>Mapa do PDF — tópicos do app</summary>
+        <p class="pdf-map-hint">Confere se você já passou por cada bloco hoje.</p>
+        <ul class="pdf-map-list" id="pdf-checklist"></ul>
+      </details>
 
       <div class="stats-card fade-in">
         <div class="stats-row">
@@ -58,38 +79,52 @@
 
       <p class="motivation" id="home-motivation"></p>
 
+      <p class="mode-section-label">Revisão expressa (menos itens, mais rápido)</p>
+      <div class="mode-grid mode-grid--cram">
+        <button type="button" class="mode-card mode-card--cram" data-mode="cram-flash">
+          <span class="mode-icon">⚡</span>
+          <span class="mode-name">Flash express</span>
+          <span class="mode-hint">18 cartões aleatórios</span>
+        </button>
+        <button type="button" class="mode-card mode-card--cram" data-mode="cram-mc">
+          <span class="mode-icon">⏱️</span>
+          <span class="mode-name">Quiz express</span>
+          <span class="mode-hint">12 questões aleatórias</span>
+        </button>
+      </div>
+
+      <p class="mode-section-label">Modos completos</p>
       <div class="mode-grid">
         <button type="button" class="mode-card" data-mode="flash">
           <span class="mode-icon">🃏</span>
           <span class="mode-name">Flashcards</span>
-          <span class="mode-hint">Flip 3D · Sabia / Não sabia</span>
+          <span class="mode-hint">Todos · flip 3D</span>
         </button>
         <button type="button" class="mode-card" data-mode="mc">
           <span class="mode-icon">✓</span>
           <span class="mode-name">Múltipla escolha</span>
-          <span class="mode-hint">4 alternativas · foco em tratamentos</span>
+          <span class="mode-hint">4 alternativas + explicação</span>
         </button>
         <button type="button" class="mode-card" data-mode="written">
           <span class="mode-icon">✍️</span>
           <span class="mode-name">Resposta escrita</span>
-          <span class="mode-hint">Sem dicas · autoavaliação</span>
+          <span class="mode-hint">Modelo na sequência</span>
         </button>
         <button type="button" class="mode-card" data-mode="cases">
           <span class="mode-icon">🏥</span>
           <span class="mode-name">Casos clínicos</span>
-          <span class="mode-hint">Cenários · tratamentos</span>
+          <span class="mode-hint">Cenários do PDF</span>
         </button>
       </div>
 
       <div class="home-actions">
-        <button type="button" class="btn btn-secondary" id="btn-change-subject">Trocar matéria</button>
-        <button type="button" class="btn btn-weak" id="btn-weak-home" hidden>📋 Painel de pontos fracos</button>
+        <button type="button" class="btn btn-secondary" id="btn-change-subject">← Outras matérias</button>
+        <button type="button" class="btn btn-weak" id="btn-weak-home" hidden>📋 Pontos fracos (3+ erros)</button>
       </div>
 
-      <p class="weak-banner" id="weak-only-banner" hidden>Modo ativo: praticando apenas tópicos com mais erros.</p>
+      <p class="weak-banner" id="weak-only-banner" hidden>Modo ativo: só tópicos com mais erros.</p>
     </section>
 
-    <!-- Flashcards -->
     <section id="view-flash" class="view" aria-label="Flashcards">
       <div class="session-top">
         <div class="progress-wrap">
@@ -119,7 +154,6 @@
       <p class="feedback-msg" id="flash-feedback" role="status"></p>
     </section>
 
-    <!-- Múltipla escolha -->
     <section id="view-mc" class="view" aria-label="Múltipla escolha">
       <div class="session-top">
         <div class="progress-wrap">
@@ -136,7 +170,6 @@
       <p class="feedback-msg" id="mc-feedback" role="status"></p>
     </section>
 
-    <!-- Resposta escrita -->
     <section id="view-written" class="view" aria-label="Resposta escrita">
       <div class="session-top">
         <div class="progress-wrap">
@@ -173,7 +206,6 @@
       <p class="feedback-msg" id="written-feedback" role="status"></p>
     </section>
 
-    <!-- Casos clínicos -->
     <section id="view-cases" class="view" aria-label="Casos clínicos">
       <div class="session-top">
         <div class="progress-wrap">
@@ -207,7 +239,6 @@
       <p class="feedback-msg" id="cases-feedback" role="status"></p>
     </section>
 
-    <!-- Painel pontos fracos -->
     <section id="view-weak" class="view" aria-label="Pontos fracos">
       <div class="hero hero-compact">
         <h1 class="hero-title">📋 Pontos fracos</h1>
@@ -226,7 +257,6 @@
       </div>
     </section>
 
-    <!-- Fim de sessão -->
     <div class="modal-overlay" id="session-end-modal" hidden>
       <div class="modal">
         <h2 id="session-end-title">Sessão concluída</h2>
@@ -236,7 +266,18 @@
     </div>
   </div>
 
+  <button
+    type="button"
+    class="sound-fab"
+    id="sound-toggle"
+    aria-pressed="true"
+    aria-label="Desativar sons de estudo"
+  >
+    <span class="sound-fab-icon" aria-hidden="true">🔊</span>
+  </button>
+
   <script src="data.js"></script>
+  <script src="sounds.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

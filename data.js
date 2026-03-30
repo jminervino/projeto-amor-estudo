@@ -1,269 +1,311 @@
-// ============================================================
-// FelixStudy — Base de Dados Multi-Matéria
-// Para adicionar uma nova matéria, crie um novo objeto seguindo
-// o mesmo modelo de "felinos" e adicione ao objeto MATERIAS.
-// ============================================================
-
+// CarineStudy — ordem na grade = `ordem`. `provaAtual` = destaque visual (liberada). `emBreve` = futuro, sem pagamento/código.
 const MATERIAS = {
   felinos: {
-    id: 'felinos',
-    nome: 'Eletiva II – Felinos',
-    icone: '🐱',
-    descricao: 'Medicina Veterinária de Felinos',
-    corPrimaria: '#7c3aed',
-    corSecundaria: '#f59e0b',
+    id: "felinos",
+    ordem: 10,
+    apenasMemoria: true,
+    desativado: true,
+    provaConcluida: true,
+    nome: "Eletiva II — Felinos",
+    icone: "🐱",
+    descricao:
+      "Prova dessa eletiva já passou. Card só para lembrar a conquista — não abre estudo no app.",
+    corPrimaria: "#7c3aed",
+    corSecundaria: "#f59e0b",
+    flashcards: [],
+    multiplaEscolha: [],
+    dissertativas: [],
+    casosClinicos: [],
+    topicos: {},
+  },
+
+  clinicaPeqAnimais: {
+    id: "clinicaPeqAnimais",
+    ordem: 20,
+    provaAtual: true,
+    nome: "Clínica Médica e Terapêutica — PDF",
+    icone: "🩺",
+    descricao:
+      "Só o que está no material da prova: semiótica, prescrição, cardio e convulsões. Força, Carine — João na torcida 💜",
+    corPrimaria: "#0d9488",
+    corSecundaria: "#f472b6",
+    cramFlashN: 18,
+    cramMcN: 12,
 
     flashcards: [
-      // --- Práticas Cat Friendly ---
-      { id: 'fc1', frente: 'Quais são os 5 princípios Cat Friendly?', verso: '1) Lugar seguro\n2) Múltiplos recursos ambientais\n3) Brincadeiras predatórias\n4) Relação positiva e negativa homem/gato\n5) Estímulos sensoriais agradáveis', topico: 'catfriendly' },
-      { id: 'fc2', frente: 'Como orientar o tutor para transporte Cat Friendly?', verso: 'Acostumar o paciente na caixa de transporte, colocar pano/toalha por cima para reduzir estresse, ensaiar visitas ao veterinário.', topico: 'catfriendly' },
-      { id: 'fc3', frente: 'Como deve ser o ambiente veterinário Cat Friendly?', verso: 'Sala/área exclusiva para felinos, difusores de feromônio, ambiente silencioso.', topico: 'catfriendly' },
-
-      // --- Neonato Órfão ---
-      { id: 'fc4', frente: 'Quais são os cuidados iniciais com um neonato órfão felino?', verso: '1) Limpar com gaze/flanela levemente umedecida com água morna\n2) Secar cuidadosamente e aquecer\n3) Alimentar\n4) Estimular micção e defecação', topico: 'neonato-orfao' },
-      { id: 'fc5', frente: 'Como estimular micção e defecação em neonatos órfãos?', verso: 'Com gaze ou algodão umedecido em água morna, fazer movimentos suaves na região perineal, simulando a lambida da mãe.', topico: 'neonato-orfao' },
-
-      // --- Convívio entre gatos ---
-      { id: 'fc6', frente: 'Quais estratégias para melhorar o convívio entre gatos?', verso: 'Troca de cheiros, aromatizador ambiente, música instrumental, cromoterapia, desvio de atenção com brincadeiras, feromônios sintéticos.', topico: 'catfriendly' },
-
-      // --- Intoxicação por Paracetamol ---
-      { id: 'fc7', frente: 'Quais os sinais clínicos de intoxicação por paracetamol em gatos?', verso: 'Cianose, icterícia, mucosas pálidas, depressão, vômitos, anorexia, hipóxia, edema de membros e face, letargia.', topico: 'intox-paracetamol' },
-      { id: 'fc8', frente: 'Qual o tratamento para intoxicação por paracetamol em gatos?', verso: 'NÃO induzir vômito | Oxigenioterapia e fluidoterapia | Acetilcisteína (antídoto) | Carvão ativado até 1h após ingestão | Ácido ascórbico.', topico: 'intox-paracetamol' },
-      { id: 'fc9', frente: 'Qual o antídoto para intoxicação por paracetamol?', verso: 'Acetilcisteína (N-acetilcisteína).', topico: 'intox-paracetamol' },
-      { id: 'fc10', frente: 'Deve-se induzir vômito na intoxicação por paracetamol em gatos?', verso: 'NÃO. O paracetamol causa metemoglobinemia e a emese pode piorar o quadro. O tratamento é suporte + antídoto.', topico: 'intox-paracetamol' },
-
-      // --- Intoxicação por Organofosforado ---
-      { id: 'fc11', frente: 'Quais os sinais clínicos de intoxicação por organofosforado em gatos?', verso: 'Convulsões, vômitos, hiper/hipoexcitabilidade, sialorreia, diarreia, apatia, bradicardia, cianose, paralisia e morte.', topico: 'intox-organofosforado' },
-      { id: 'fc12', frente: 'Qual o antídoto para intoxicação por organofosforado?', verso: 'Atropina — reverte efeitos muscarínicos: hipersalivação, bradicardia, miose, secreções pulmonares.', topico: 'intox-organofosforado' },
-      { id: 'fc13', frente: 'Qual o tratamento completo para intoxicação por organofosforado?', verso: 'Oxigenioterapia | Anticonvulsivo (diazepam) | Atropina (antídoto) | Descontaminação oral: carvão ativado até 1h | Descontaminação cutânea: lavar com água morna e sabão neutro | Monitorar FC e FR.', topico: 'intox-organofosforado' },
-
-      // --- Quinolonas e AINES ---
-      { id: 'fc14', frente: 'Quais os efeitos indesejados das Quinolonas em gatos?', verso: 'Incoordenação, tremor, nistagmo, convulsão e cegueira aguda irreversível.', topico: 'farmacos-quinolona-aines' },
-      { id: 'fc15', frente: 'Quais os efeitos indesejados dos AINES em gatos?', verso: 'Intoxicação, anorexia, vômitos, letargia, melena, ataxia e polidipsia.', topico: 'farmacos-quinolona-aines' },
-
-      // --- Odontologia Felina ---
-      { id: 'fc16', frente: 'Como é feito o diagnóstico de gengivite felina?', verso: 'Radiografia intraoral, anamnese + exame físico oral detalhado, hemograma e bioquímico hepático e renal, sondagem periodontal.', topico: 'odontologia-felina' },
-      { id: 'fc17', frente: 'Qual o tratamento da gengivite felina?', verso: 'Limpeza supra e subgengival, remoção dos depósitos dentários (placa e cálculo) e profilaxia.', topico: 'odontologia-felina' },
-      { id: 'fc18', frente: 'Como diferenciar gengivite de periodontite no tratamento?', verso: 'Gengivite: limpeza + remoção de placa/cálculo + profilaxia.\nPeriodontite: limpeza + extração dentária com perda de inserção + profilaxia rigorosa.', topico: 'odontologia-felina' },
-      { id: 'fc19', frente: 'Qual o tratamento da reabsorção dentária felina?', verso: 'Profilaxia e controle + extração cirúrgica.', topico: 'odontologia-felina' },
-      { id: 'fc20', frente: 'Qual o tratamento da gengivoestomatite crônica felina?', verso: 'Analgésico (tramadol) | AIE (prednisolona) ou AINE (meloxicam) | Antibiótico em quadros agudos, pré ou pós-cirúrgico (metronidazol).', topico: 'odontologia-felina' },
-
-      // --- Lipidose Hepática ---
-      { id: 'fc21', frente: 'Quais as causas da lipidose hepática felina?', verso: 'Obesidade, diabetes, pancreatite, hiperparatireoidismo, cardiopatia, anorexia prolongada, retirada de proteínas.', topico: 'lipidose-hepatica' },
-      { id: 'fc22', frente: 'Quais os sinais clínicos da lipidose hepática?', verso: 'Anorexia prolongada, letargia, depressão, perda de peso, icterícia, desidratação e hepatomegalia.', topico: 'lipidose-hepatica' },
-      { id: 'fc23', frente: 'Qual o tratamento da lipidose hepática felina?', verso: 'Hepato e gastroprotetores | Correção e monitoração hidroeletrolítica (K, P e Na) | Suporte nutricional | Antieméticos e procinéticos.', topico: 'lipidose-hepatica' },
-
-      // --- Pancreatite ---
-      { id: 'fc24', frente: 'Quais os sinais clínicos da pancreatite felina?', verso: 'Anorexia, letargia, vômitos, diarreia, perda de peso, PU/PD, dor abdominal, desidratação, mucosas pálidas, icterícia, hipo/hipertermia, ascite e massa abdominal palpável.', topico: 'pancreatite' },
-      { id: 'fc25', frente: 'Qual o exame padrão-ouro para pancreatite felina?', verso: 'Lipase imunoespecífica SPEC FPLI.', topico: 'pancreatite' },
-      { id: 'fc26', frente: 'Qual o tratamento da pancreatite felina?', verso: 'Fluidoterapia | Corrigir hipocalcemia e hipocalemia | Analgesia (fentanil) | Antieméticos (ondasetrona) | Dieta hiperproteica (cobalamina e ômega 3).', topico: 'pancreatite' },
-
-      // --- Platinossomose ---
-      { id: 'fc27', frente: 'Qual o ciclo da platinossomose?', verso: 'Gato (HD) ingere isópodes terrestres, caramujos ou lagartixas (HI) → infecção por predação → eliminação dos ovos nas fezes → HI ingerem os ovos → gato preda os HI.', topico: 'platinossomose' },
-      { id: 'fc28', frente: 'Qual o tratamento da platinossomose?', verso: 'Praziquantel.', topico: 'platinossomose' },
-      { id: 'fc29', frente: 'Qual a patogenia da platinossomose?', verso: 'Parasita migra para fígado, vesícula biliar e ductos biliares → irritação e inflamação crônica do epitélio biliar → espessamento dos ductos biliares → pode causar colangiohepatite, fibrose biliar, cirrose e/ou obstrução biliar.', topico: 'platinossomose' },
-
-      // --- CRVF ---
-      { id: 'fc30', frente: 'Como diferenciar FHV de FCV clinicamente?', verso: 'FHV: ceratite ulcerativa, espirros frequentes, secreção nasal/ocular INTENSA, aborto.\nFCV: úlceras ORAIS, poliartrite, espirros leve a moderados, sialorreia, claudicação.', topico: 'crvf-fhv-fcv' },
-      { id: 'fc31', frente: 'Qual o tratamento para CRVF (FHV/FCV)?', verso: 'Dipirona (febre) | Omiclom A orabase (úlceras orais) | Antibiótico (amoxicilina, azitromicina ou doxiciclina).', topico: 'crvf-fhv-fcv' },
-      { id: 'fc32', frente: 'Qual o esquema vacinal da V3 para adultos?', verso: 'Duas doses com intervalo de 21/30 dias, reforço a cada 3 anos ou anual.', topico: 'crvf-fhv-fcv' },
-
-      // --- Rinite ---
-      { id: 'fc33', frente: 'O que a rinite unilateral sugere como causas?', verso: 'Corpo estranho, neoplasias, pólipos, infecção fúngica, fístula oronasal.', topico: 'rinite' },
-      { id: 'fc34', frente: 'Qual o tratamento da rinite felina?', verso: 'Fluidoterapia | Lavagem nasal e nebulização | Descongestionantes e histamínicos | Anti-inflamatórios (meloxicam ou prednisolona) | Antifúngico e antibiótico (apenas confirmatório) | Cirurgia (neoplasias e pólipos).', topico: 'rinite' },
-
-      // --- Bronquite e Asma ---
-      { id: 'fc35', frente: 'Como diferenciar asma de bronquite felina?', verso: 'Asma: tosse episódica, postura ortopneica, eosinófilos >20%, quadro AGUDO (cianose).\nBronquite: tosse frequente, neutrófilos >10%, quadro CRÔNICO (dispneia, taquipneia, sibilos).', topico: 'bronquite-asma' },
-      { id: 'fc36', frente: 'Qual o tratamento da asma/bronquite felina?', verso: 'Oxigenioterapia | Broncodilatadores (Terbutalina) | AIES (Prednisolona) | Eliminação do alérgeno.', topico: 'bronquite-asma' },
+      { id: "cp-fc1", frente: "Na proporção típica do exame clínico, quanto pesa a anamnese?", verso: "Cerca de 50% da avaliação — o histórico do animal é a base de tudo.", topico: "exame-clinico" },
+      { id: "cp-fc2", frente: "E o exame físico, em porcentagem aproximada?", verso: "~35%. Resenha ~0%; exames complementares ~15%.", topico: "exame-clinico" },
+      { id: "cp-fc3", frente: "O que é inspeção na semiótica?", verso: "Observação visual do aspecto interno e externo: postura, locomoção, condição corporal, pelame.", topico: "semiotica" },
+      { id: "cp-fc4", frente: "Palpação: consistência mole, firme, dura, pastosa, flutuante e crepitante indicam o quê?", verso: "Mole: normal; firme: fígado/músculo; dura: osso/tumor; pastosa: Godet +; flutuante: líquido; crepitante: ar/gás.", topico: "semiotica" },
+      { id: "cp-fc5", frente: "Na avaliação de linfonodos, o que observar?", verso: "Consistência, mobilidade (aderido ou não) e temperatura.", topico: "semiotica" },
+      { id: "cp-fc6", frente: "Quais são os parâmetros vitais clássicos no exame físico?", verso: "Temperatura, mucosas, TPC, FC, FR, pulso arterial e pressão arterial.", topico: "exame-clinico" },
+      { id: "cp-fc7", frente: "Diferença entre diagnóstico clínico e diferencial?", verso: "Clínico: definido na clínica pelo exame. Diferencial: lista de causas possíveis pelos sinais (ex.: vômito/diarreia — ancilostomose, toxocara, cinomose).", topico: "diagnostico-prognostico" },
+      { id: "cp-fc8", frente: "Tipos de prognóstico mencionados no material?", verso: "Favorável; reservado ou desfavorável — previsão de resposta ao tratamento.", topico: "diagnostico-prognostico" },
+      { id: "cp-fc9", frente: "Melena vs hematoquezia — em uma frase cada.", verso: "Melena: fezes enegrecidas (sangue digerido). Hematoquezia: sangue vivo nas fezes.", topico: "termos-tecnicos" },
+      { id: "cp-fc10", frente: "Ortopneia é o quê?", verso: "Respiração com pescoço estendido — alívio postural da dificuldade respiratória.", topico: "termos-tecnicos" },
+      { id: "cp-fc11", frente: "Azotemia — definição.", verso: "Aumento de ureia e creatinina séricas.", topico: "termos-tecnicos" },
+      { id: "cp-fc12", frente: "Dose vs dosagem na prescrição?", verso: "Dose: quantidade por administração. Dosagem: dose + frequência + duração do tratamento.", topico: "prescricao" },
+      { id: "cp-fc13", frente: "Intervalo entre gotas de colírios (material)?", verso: "Cerca de 5 minutos entre colírios diferentes.", topico: "prescricao" },
+      { id: "cp-fc14", frente: "Receita A (amarela) — o que controla?", verso: "Listas A1/A2 entorpecentes e A3 psicróticos; alta dependência; validade 30 dias; numeração ANVISA; antibiótico associado até 10 dias no modelo citado.", topico: "receituario" },
+      { id: "cp-fc15", frente: "Receita B (azul) vs C (branca) — ideia geral.", verso: "B: B1/B2, menos restritiva que A. C: mais flexível (antibióticos humanos controlados, ansiolíticos etc.), 2 vias.", topico: "receituario" },
+      { id: "cp-fc16", frente: "Portaria 344/98 — papel das receitas A, B e C.", verso: "Regulam substâncias com potencial de abuso, dependência ou risco sanitário.", topico: "receituario" },
+      { id: "cp-fc17", frente: "SIPEAGRO — exemplo de uso na aula?", verso: "Medicamentos veterinários de controle especial — ex.: cetamina e xilazina com receita SIPEAGRO.", topico: "receituario" },
+      { id: "cp-fc18", frente: "MAPA na cadeia de medicamentos vet?", verso: "Fiscalização e liberação de produtos de uso veterinário.", topico: "receituario" },
+      { id: "cp-fc19", frente: "Ivermectina — alerta do material para qual raça?", verso: "Contra-indicação/cuidado em cães pastores (sensibilidade MDR1).", topico: "prescricao" },
+      { id: "cp-fc20", frente: "Cardiomiopatia hipertrófica — quem mais sofre?", verso: "Felinos — principal cardiomiopatia nos gatos; hipertrofia do septo interventricular reduz lúmen.", topico: "cardio-peq" },
+      { id: "cp-fc21", frente: "Edema pulmonar cardiogênico — qual lado?", verso: "Insuficiência cardíaca esquerda — cardiogênico é sempre lado esquerdo no raciocínio do material.", topico: "cardio-peq" },
+      { id: "cp-fc22", frente: "Líquido inflamatório no parênquima pulmonar vs não inflamatório?", verso: "Inflamatório: pneumonia. Não inflamatório: edema pulmonar.", topico: "cardio-peq" },
+      { id: "cp-fc23", frente: "Tosse cardíaca vs respiratória (material).", verso: "Cardíaca: coração aumentado desloca dorsalmente traqueia — tosse seca, improdutiva, baixa intensidade. Respiratória: alta intensidade e forte.", topico: "cardio-peq" },
+      { id: "cp-fc24", frente: "Graduação de sopros I a III (resumo).", verso: "I: brando. II: brando mas fácil de ouvir. III: moderado. (IV–VI: mais intenso + frêmito.)", topico: "cardio-peq" },
+      { id: "cp-fc25", frente: "Endocardite degenerativa mitral — prevalência em cães?", verso: "Principal causa de doença cardíaca em cães; ~60% só mitral, 30% mitral+tricúspide, 10% só tricúspide.", topico: "dmvd" },
+      { id: "cp-fc26", frente: "Tratamento farmacológico citado para DMVD / ICC (esqueleto).", verso: "IECA (benazepril/enalapril), furosemida, espironolactona, dieta hipossódica, repouso; pimobendana conforme estágio (inodilatador).", topico: "dmvd" },
+      { id: "cp-fc27", frente: "Doses máximas de furosemida citadas (cão/gato).", verso: "Gato até ~4 mg/kg; cão até ~8 mg/kg (material de aula — conferir protocolo clínico atual).", topico: "dmvd" },
+      { id: "cp-fc28", frente: "Órgãos-alvo da hipertensão arterial sistêmica.", verso: "Olhos (cegueira, glaucoma, hemorragias, descolamento de retina), rins, coração (hipertrofia concêntrica), SNC (AVC, convulsões).", topico: "hipertensao" },
+      { id: "cp-fc29", frente: "ATE em gato — plano terapêutico citado.", verso: "Estabilizar, analgesia (butorfanol), heparina, AAS e repouso; prognóstico reservado.", topico: "ate-gato" },
+      { id: "cp-fc30", frente: "Pericardiocentese — espaço intercostal citado.", verso: "7º espaço intercostal (material).", topico: "pericardio" },
+      { id: "cp-fc31", frente: "Dispneia inspiratória vs expiratória vs mista.", verso: "Inspiratória: vias aéreas superiores. Expiratória: pulmões/brônquios. Mista: TRS + TRI comprometidos.", topico: "respiratorio" },
+      { id: "cp-fc32", frente: "Fases da convulsão: pródromo, aura, icto, pós-icto.", verso: "Pródromo: comportamento, EEG normal. Aura: sinais estereotipados, EEG alterado. Icto: crise. Pós-icto: sedação/sede/comportamento alterado.", topico: "epilepsia" },
+      { id: "cp-fc33", frente: "Emergência convulsiva: midazolam vs diazepam (material).", verso: "Midazolam: 1ª opção — hidrossolúvel, IN/IV/IM, ~0,3 mg/kg. Diazepam: 2ª — IV 0,5 mg/kg ou retal 2 mg/kg; hepatotoxicidade relativa.", topico: "epilepsia" },
+      { id: "cp-fc34", frente: "Tratamento crônico de eleição para epilepsia?", verso: "Fenobarbital — monitorar níveis séricos (faixa terapêutica ~20–35 µg/mL) e bioquímica a cada 6 meses.", topico: "epilepsia" },
+      { id: "cp-fc35", frente: "Brometo de potássio — cuidado em cardiopatas e uso em felinos.", verso: "Forma potássica usada em ICC; não usar em felinos (pode causar dificuldade respiratória).", topico: "epilepsia" },
+      { id: "cp-fc36", frente: "Hipoglicemia vs hipocalcemia — pistas de paciente (material).", verso: "Filhote pequeno convulsionando: pensar hipoglicemia. Fêmea pós-parto convulsionando: hipocalcemia.", topico: "epilepsia" },
+      { id: "cp-fc37", frente: "Etiologias de convulsão — mnemônico VITAMINAD (ideia).", verso: "Vascular, inflamatório/infeccioso/idiopático, trauma/tóxico, anomalias, metabólico, inflamatório, neoplasia/nutricional, anomalias, degeneração — esquema de classificação extracraniana/intracraniana.", topico: "epilepsia" },
     ],
 
     multiplaEscolha: [
-      // --- Intoxicação por Paracetamol ---
-      { id: 'mc1', pergunta: 'Qual é o antídoto para intoxicação por paracetamol em felinos?', alternativas: [{ texto: 'Atropina', correta: false }, { texto: 'Acetilcisteína', correta: true }, { texto: 'Diazepam', correta: false }, { texto: 'Vitamina K', correta: false }], topico: 'intox-paracetamol', explicacao: 'A acetilcisteína (N-acetilcisteína) é o antídoto específico pois repõe os estoques de glutationa hepática.' },
-      { id: 'mc2', pergunta: 'Na intoxicação por paracetamol em gatos, deve-se:', alternativas: [{ texto: 'Induzir vômito imediatamente', correta: false }, { texto: 'Administrar carvão ativado até 1h após ingestão + Acetilcisteína', correta: true }, { texto: 'Administrar atropina IV', correta: false }, { texto: 'Fazer lavagem gástrica com água oxigenada', correta: false }], topico: 'intox-paracetamol', explicacao: 'NÃO se induz vômito. O tratamento inclui oxigenioterapia, fluidoterapia, acetilcisteína, carvão ativado até 1h e ácido ascórbico.' },
-      { id: 'mc3', pergunta: 'Quais sinais clínicos são compatíveis com intoxicação por paracetamol em felinos?', alternativas: [{ texto: 'Poliúria, polidipsia e polifagia', correta: false }, { texto: 'Cianose, icterícia, edema de face e membros', correta: true }, { texto: 'Diarreia sanguinolenta e melena', correta: false }, { texto: 'Convulsões tônico-clônicas e opistótono', correta: false }], topico: 'intox-paracetamol', explicacao: 'A intoxicação por paracetamol causa metemoglobinemia (cianose), lesão hepática (icterícia) e edema de face e membros.' },
-
-      // --- Intoxicação por Organofosforado ---
-      { id: 'mc4', pergunta: 'Qual é o antídoto para intoxicação por organofosforado em felinos?', alternativas: [{ texto: 'Acetilcisteína', correta: false }, { texto: 'Flumazenil', correta: false }, { texto: 'Atropina', correta: true }, { texto: 'Naloxona', correta: false }], topico: 'intox-organofosforado', explicacao: 'Atropina reverte os efeitos muscarínicos: hipersalivação, bradicardia, miose e secreções pulmonares.' },
-      { id: 'mc5', pergunta: 'Na intoxicação por organofosforado, a atropina é usada para reverter:', alternativas: [{ texto: 'Efeitos nicotínicos como fasciculações musculares', correta: false }, { texto: 'Efeitos muscarínicos como bradicardia e sialorreia', correta: true }, { texto: 'Efeitos centrais como convulsões', correta: false }, { texto: 'Efeitos hepatotóxicos como icterícia', correta: false }], topico: 'intox-organofosforado', explicacao: 'A atropina é anticolinérgico que reverte efeitos muscarínicos: hipersalivação, bradicardia, miose e secreções pulmonares.' },
-      { id: 'mc6', pergunta: 'Qual anticonvulsivo é indicado na intoxicação por organofosforado?', alternativas: [{ texto: 'Fenobarbital', correta: false }, { texto: 'Gabapentina', correta: false }, { texto: 'Diazepam', correta: true }, { texto: 'Levetiracetam', correta: false }], topico: 'intox-organofosforado', explicacao: 'O diazepam é o anticonvulsivo de escolha para controle das convulsões na intoxicação por organofosforado.' },
-      { id: 'mc7', pergunta: 'Como deve ser a descontaminação cutânea na intoxicação por organofosforado?', alternativas: [{ texto: 'Lavar com álcool iodado', correta: false }, { texto: 'Lavar com água morna e sabão neutro', correta: true }, { texto: 'Aplicar vaselina sobre a pele', correta: false }, { texto: 'Não é necessária descontaminação cutânea', correta: false }], topico: 'intox-organofosforado', explicacao: 'A descontaminação cutânea é feita lavando com água morna e sabão neutro para remover o produto da pele.' },
-
-      // --- Lipidose Hepática ---
-      { id: 'mc8', pergunta: 'Qual achado hematológico é característico da lipidose hepática felina?', alternativas: [{ texto: 'Leucocitose com desvio à esquerda', correta: false }, { texto: 'Anemia com poiquilocitose', correta: true }, { texto: 'Trombocitopenia severa', correta: false }, { texto: 'Policitemia', correta: false }], topico: 'lipidose-hepatica', explicacao: 'No hemograma da lipidose hepática encontramos anemia com poiquilocitose (hemácias de formas anormais).' },
-      { id: 'mc9', pergunta: 'Qual é o tratamento da lipidose hepática felina?', alternativas: [{ texto: 'Antibioticoterapia agressiva + jejum', correta: false }, { texto: 'Hepatoprotetores + correção hidroeletrolítica + suporte nutricional + antieméticos', correta: true }, { texto: 'Apenas fluidoterapia e observação', correta: false }, { texto: 'Cirurgia hepática de emergência', correta: false }], topico: 'lipidose-hepatica', explicacao: 'O tratamento inclui hepato e gastroprotetores, correção hidroeletrolítica (K, P e Na), suporte nutricional e antieméticos/procinéticos.' },
-      { id: 'mc10', pergunta: 'Quais eletrólitos devem ser monitorados na lipidose hepática?', alternativas: [{ texto: 'Cálcio e magnésio', correta: false }, { texto: 'Potássio, fósforo e sódio', correta: true }, { texto: 'Ferro e zinco', correta: false }, { texto: 'Cloro e bicarbonato', correta: false }], topico: 'lipidose-hepatica', explicacao: 'Na lipidose hepática é fundamental corrigir e monitorar K, P e Na (hipocalemia, hipofosfatemia).' },
-
-      // --- Pancreatite ---
-      { id: 'mc11', pergunta: 'Qual é o exame padrão-ouro para diagnóstico de pancreatite felina?', alternativas: [{ texto: 'Amilase sérica', correta: false }, { texto: 'Lipase imunoespecífica SPEC FPLI', correta: true }, { texto: 'Radiografia abdominal', correta: false }, { texto: 'Hemograma completo', correta: false }], topico: 'pancreatite', explicacao: 'A lipase imunoespecífica SPEC FPLI é o padrão-ouro por sua alta sensibilidade e especificidade para pancreatite felina.' },
-      { id: 'mc12', pergunta: 'Qual analgésico é indicado no tratamento da pancreatite felina?', alternativas: [{ texto: 'Meloxicam', correta: false }, { texto: 'Tramadol', correta: false }, { texto: 'Fentanil', correta: true }, { texto: 'Dipirona', correta: false }], topico: 'pancreatite', explicacao: 'A analgesia na pancreatite felina é feita com fentanil, um opioide potente para dor visceral intensa.' },
-      { id: 'mc13', pergunta: 'Qual antiemético é indicado no tratamento da pancreatite felina?', alternativas: [{ texto: 'Metoclopramida', correta: false }, { texto: 'Ondasetrona', correta: true }, { texto: 'Domperidona', correta: false }, { texto: 'Ranitidina', correta: false }], topico: 'pancreatite', explicacao: 'A ondasetrona (ondansetrona) é o antiemético de escolha no tratamento da pancreatite felina.' },
-      { id: 'mc14', pergunta: 'Qual dieta é recomendada na pancreatite felina?', alternativas: [{ texto: 'Dieta hipoproteica e hiperlipídica', correta: false }, { texto: 'Jejum prolongado por 72h', correta: false }, { texto: 'Dieta hiperproteica com cobalamina e ômega 3', correta: true }, { texto: 'Dieta à base de carboidratos complexos', correta: false }], topico: 'pancreatite', explicacao: 'Na pancreatite felina recomenda-se dieta hiperproteica suplementada com cobalamina e ômega 3.' },
-
-      // --- Platinossomose ---
-      { id: 'mc15', pergunta: 'Qual é o tratamento da platinossomose?', alternativas: [{ texto: 'Metronidazol', correta: false }, { texto: 'Fenbendazol', correta: false }, { texto: 'Praziquantel', correta: true }, { texto: 'Ivermectina', correta: false }], topico: 'platinossomose', explicacao: 'O praziquantel é o fármaco de escolha para o tratamento da platinossomose.' },
-      { id: 'mc16', pergunta: 'Quais são os hospedeiros intermediários do Platynosomum?', alternativas: [{ texto: 'Pulgas e carrapatos', correta: false }, { texto: 'Isópodes terrestres, caramujos e lagartixas', correta: true }, { texto: 'Mosquitos e borrachudos', correta: false }, { texto: 'Ratos e camundongos', correta: false }], topico: 'platinossomose', explicacao: 'Os HI são isópodes terrestres, caramujos e lagartixas. O gato se infecta ao predá-los.' },
-      { id: 'mc17', pergunta: 'Para onde migra o Platynosomum no organismo do gato?', alternativas: [{ texto: 'Pulmões e brônquios', correta: false }, { texto: 'Fígado, vesícula biliar e ductos biliares', correta: true }, { texto: 'Rins e bexiga', correta: false }, { texto: 'Intestino delgado e ceco', correta: false }], topico: 'platinossomose', explicacao: 'O parasita migra para fígado, vesícula biliar e ductos biliares, causando inflamação crônica do epitélio biliar.' },
-
-      // --- CRVF ---
-      { id: 'mc18', pergunta: 'Qual vírus causa úlceras orais, poliartrite e claudicação em felinos?', alternativas: [{ texto: 'FHV (Herpesvírus felino)', correta: false }, { texto: 'FCV (Calicivírus felino)', correta: true }, { texto: 'FIV (Imunodeficiência felina)', correta: false }, { texto: 'FeLV (Leucemia felina)', correta: false }], topico: 'crvf-fhv-fcv', explicacao: 'O FCV causa úlceras orais, poliartrite, claudicação e sialorreia. O FHV causa ceratite ulcerativa e secreção intensa.' },
-      { id: 'mc19', pergunta: 'Qual o intervalo entre doses da V3 para gatos adultos?', alternativas: [{ texto: '7 dias', correta: false }, { texto: '14 dias', correta: false }, { texto: '21 a 30 dias', correta: true }, { texto: '60 dias', correta: false }], topico: 'crvf-fhv-fcv', explicacao: 'Para adultos: duas doses com intervalo de 21/30 dias, reforço a cada 3 anos ou anual.' },
-      { id: 'mc20', pergunta: 'Qual antibiótico pode ser usado no tratamento de CRVF?', alternativas: [{ texto: 'Cefalexina', correta: false }, { texto: 'Enrofloxacina', correta: false }, { texto: 'Amoxicilina, azitromicina ou doxiciclina', correta: true }, { texto: 'Gentamicina', correta: false }], topico: 'crvf-fhv-fcv', explicacao: 'Os antibióticos indicados para prevenir infecções secundárias na CRVF são amoxicilina, azitromicina ou doxiciclina.' },
-      { id: 'mc21', pergunta: 'Qual medicamento é indicado para úlceras orais na CRVF?', alternativas: [{ texto: 'Nistatina', correta: false }, { texto: 'Omiclom A orabase', correta: true }, { texto: 'Omeprazol', correta: false }, { texto: 'Sucralfato', correta: false }], topico: 'crvf-fhv-fcv', explicacao: 'Omiclom A orabase é indicado para tratamento das úlceras orais causadas pelo FCV.' },
-
-      // --- Odontologia Felina ---
-      { id: 'mc22', pergunta: 'Qual a diferença no tratamento entre gengivite e periodontite felina?', alternativas: [{ texto: 'Gengivite: extração dentária | Periodontite: apenas profilaxia', correta: false }, { texto: 'Gengivite: limpeza + profilaxia | Periodontite: limpeza + extração com perda de inserção + profilaxia', correta: true }, { texto: 'Não há diferença no tratamento', correta: false }, { texto: 'Ambas requerem extração total dos dentes', correta: false }], topico: 'odontologia-felina', explicacao: 'Na gengivite: limpeza supra/subgengival + remoção de placa/cálculo + profilaxia. Na periodontite: inclui extração dentária com perda de inserção.' },
-      { id: 'mc23', pergunta: 'Qual analgésico é usado na gengivoestomatite crônica felina?', alternativas: [{ texto: 'Fentanil', correta: false }, { texto: 'Morfina', correta: false }, { texto: 'Tramadol', correta: true }, { texto: 'Dipirona', correta: false }], topico: 'odontologia-felina', explicacao: 'O tramadol é o analgésico indicado na gengivoestomatite crônica felina.' },
-      { id: 'mc24', pergunta: 'Qual antibiótico é indicado na gengivoestomatite crônica felina em quadros agudos?', alternativas: [{ texto: 'Amoxicilina', correta: false }, { texto: 'Metronidazol', correta: true }, { texto: 'Doxiciclina', correta: false }, { texto: 'Cefalexina', correta: false }], topico: 'odontologia-felina', explicacao: 'O metronidazol é o antibiótico de escolha em quadros agudos, pré ou pós-cirúrgicos de gengivoestomatite crônica.' },
-      { id: 'mc25', pergunta: 'Qual achado histopatológico é característico da gengivoestomatite crônica felina?', alternativas: [{ texto: 'Granulomas caseosos', correta: false }, { texto: 'Hiperplasia do epitélio oral, ulcerações profundas e infiltrados linfoplasmocitários', correta: true }, { texto: 'Necrose coagulativa difusa', correta: false }, { texto: 'Metaplasia escamosa', correta: false }], topico: 'odontologia-felina', explicacao: 'O histopatológico revela hiperplasia do epitélio oral, ulcerações profundas e infiltrados linfoplasmocitários.' },
-
-      // --- Rinite ---
-      { id: 'mc26', pergunta: 'Rinite unilateral em felinos sugere:', alternativas: [{ texto: 'Infecção viral (FHV)', correta: false }, { texto: 'Corpo estranho, neoplasia, pólipo ou infecção fúngica', correta: true }, { texto: 'Bronquite crônica', correta: false }, { texto: 'Alergia alimentar', correta: false }], topico: 'rinite', explicacao: 'Rinite unilateral sugere: corpo estranho, neoplasias, pólipos, infecção fúngica ou fístula oronasal. Bilateral: viral e inflamatória.' },
-      { id: 'mc27', pergunta: 'Qual o tratamento completo da rinite felina?', alternativas: [{ texto: 'Apenas antibiótico por 14 dias', correta: false }, { texto: 'Fluidoterapia + lavagem nasal + descongestionantes + anti-inflamatórios + antifúngico/antibiótico se confirmado', correta: true }, { texto: 'Corticoides sistêmicos por 30 dias', correta: false }, { texto: 'Cirurgia imediata', correta: false }], topico: 'rinite', explicacao: 'O tratamento inclui fluidoterapia, lavagem nasal/nebulização, descongestionantes, anti-inflamatórios e antibiótico/antifúngico apenas se confirmado.' },
-
-      // --- Bronquite e Asma ---
-      { id: 'mc28', pergunta: 'Na asma felina, qual tipo celular predomina com >20% no lavado bronquial?', alternativas: [{ texto: 'Neutrófilos', correta: false }, { texto: 'Linfócitos', correta: false }, { texto: 'Eosinófilos', correta: true }, { texto: 'Monócitos', correta: false }], topico: 'bronquite-asma', explicacao: 'Na asma felina há infiltrado de eosinófilos >20%. Na bronquite, predominam neutrófilos >10%.' },
-      { id: 'mc29', pergunta: 'Qual broncodilatador é indicado no tratamento da asma/bronquite felina?', alternativas: [{ texto: 'Aminofilina', correta: false }, { texto: 'Salbutamol', correta: false }, { texto: 'Terbutalina', correta: true }, { texto: 'Teofilina', correta: false }], topico: 'bronquite-asma', explicacao: 'A terbutalina é o broncodilatador indicado no tratamento da asma e bronquite felina.' },
-      { id: 'mc30', pergunta: 'Qual corticoide é usado no tratamento da asma felina?', alternativas: [{ texto: 'Dexametasona', correta: false }, { texto: 'Prednisolona', correta: true }, { texto: 'Hidrocortisona', correta: false }, { texto: 'Betametasona', correta: false }], topico: 'bronquite-asma', explicacao: 'O AIES utilizado é a prednisolona.' },
-
-      // --- Neonato Órfão ---
-      { id: 'mc31', pergunta: 'Qual é a ordem correta dos cuidados com neonato órfão felino?', alternativas: [{ texto: 'Alimentar → Aquecer → Limpar → Estimular', correta: false }, { texto: 'Limpar → Secar/Aquecer → Alimentar → Estimular micção/defecação', correta: true }, { texto: 'Estimular → Limpar → Alimentar → Aquecer', correta: false }, { texto: 'Aquecer → Alimentar → Estimular → Limpar', correta: false }], topico: 'neonato-orfao', explicacao: 'A ordem é: limpar com gaze umedecida → secar e aquecer → alimentar → estimular micção e defecação.' },
-
-      // --- Cat Friendly ---
-      { id: 'mc32', pergunta: 'Quais recursos são indicados para reduzir o estresse no transporte de felinos?', alternativas: [{ texto: 'Sedar o animal antes do transporte', correta: false }, { texto: 'Acostumar à caixa + cobrir com pano + ensaiar visitas', correta: true }, { texto: 'Transportar no colo sem caixa', correta: false }, { texto: 'Usar caixa aberta para ventilação', correta: false }], topico: 'catfriendly', explicacao: 'Orientações Cat Friendly: acostumar na caixa de transporte, cobrir com pano/toalha, ensaiar visitas.' },
-
-      // --- Fármacos extras focados em tratamento ---
-      { id: 'mc33', pergunta: 'Qual é o antipirético indicado no tratamento de CRVF felina?', alternativas: [{ texto: 'Meloxicam', correta: false }, { texto: 'Dipirona', correta: true }, { texto: 'Ibuprofeno', correta: false }, { texto: 'Paracetamol', correta: false }], topico: 'crvf-fhv-fcv', explicacao: 'Dipirona é o antipirético indicado para febre na CRVF. Paracetamol é TÓXICO para gatos!' },
-      { id: 'mc34', pergunta: 'Qual efeito indesejado grave e irreversível as quinolonas podem causar em gatos?', alternativas: [{ texto: 'Insuficiência renal aguda', correta: false }, { texto: 'Cegueira aguda irreversível', correta: true }, { texto: 'Surdez bilateral', correta: false }, { texto: 'Paralisia dos membros pélvicos', correta: false }], topico: 'farmacos-quinolona-aines', explicacao: 'As quinolonas em gatos podem causar cegueira aguda irreversível, além de incoordenação, tremor, nistagmo e convulsão.' },
-      { id: 'mc35', pergunta: 'Quais achados bioquímicos são encontrados na lipidose hepática felina?', alternativas: [{ texto: 'Hiperalbuminemia e hipercalcemia', correta: false }, { texto: 'ALT, GGT e FA aumentados, hipoalbuminemia, hipocalcemia', correta: true }, { texto: 'Todos os valores normais', correta: false }, { texto: 'Apenas ureia e creatinina aumentadas', correta: false }], topico: 'lipidose-hepatica', explicacao: 'Na lipidose hepática: ALT, GGT e FA aumentados, hipoalbuminemia, hipocalcemia, hipofosfatemia e hiperamonemia.' },
-      { id: 'mc36', pergunta: 'Qual exame de imagem é indicado no diagnóstico da platinossomose?', alternativas: [{ texto: 'Radiografia torácica', correta: false }, { texto: 'Ultrassonografia abdominal', correta: true }, { texto: 'Ressonância magnética', correta: false }, { texto: 'Ecocardiograma', correta: false }], topico: 'platinossomose', explicacao: 'A ultrassonografia abdominal é indicada para avaliar fígado, vesícula biliar e ductos biliares na platinossomose.' },
-      { id: 'mc37', pergunta: 'Qual anti-inflamatório pode ser usado na rinite felina?', alternativas: [{ texto: 'Carprofeno', correta: false }, { texto: 'Meloxicam ou prednisolona', correta: true }, { texto: 'Ibuprofeno', correta: false }, { texto: 'Fenilbutazona', correta: false }], topico: 'rinite', explicacao: 'Na rinite felina podem ser usados meloxicam (AINE) ou prednisolona (AIES).' },
-      { id: 'mc38', pergunta: 'Qual é o diagnóstico da reabsorção dentária felina?', alternativas: [{ texto: 'Apenas anamnese', correta: false }, { texto: 'Exame físico oral + radiografia dentária', correta: true }, { texto: 'Hemograma completo', correta: false }, { texto: 'Ultrassonografia cervical', correta: false }], topico: 'odontologia-felina', explicacao: 'Exame físico oral detalhado + anamnese + radiografia dentária (PO).' },
-      { id: 'mc39', pergunta: 'Quais as causas da pancreatite felina?', alternativas: [{ texto: 'Apenas alimentação inadequada', correta: false }, { texto: 'Hipercalcemia, intoxicações, doenças hepatobiliares, lipídeos, diabetes, infecção, linfoma', correta: true }, { texto: 'Somente infecção bacteriana', correta: false }, { texto: 'Exercício excessivo', correta: false }], topico: 'pancreatite', explicacao: 'As causas incluem hipercalcemia, intoxicações, doenças hepatobiliares, lipídeos, diabetes, infecção e linfoma.' },
-      { id: 'mc40', pergunta: 'Qual AIE é usado na gengivoestomatite crônica felina?', alternativas: [{ texto: 'Dexametasona', correta: false }, { texto: 'Prednisolona', correta: true }, { texto: 'Triancinolona', correta: false }, { texto: 'Betametasona', correta: false }], topico: 'odontologia-felina', explicacao: 'A prednisolona é o AIE de escolha, podendo-se usar meloxicam como AINE alternativo.' },
+      { id: "cp-mc1", pergunta: "Na estrutura do exame clínico, qual componente tem maior peso relativo (~50%)?", alternativas: [{ texto: "Resenha", correta: false }, { texto: "Anamnese", correta: true }, { texto: "Exame físico", correta: false }, { texto: "Exames complementares", correta: false }], topico: "exame-clinico", explicacao: "O histórico (anamnese) é a maior fatia — sem ele o físico fica 'cego'." },
+      { id: "cp-mc2", pergunta: "Godet positivo na palpação sugere:", alternativas: [{ texto: "Osso exposto", correta: false }, { texto: "Consistência pastosa / flutuação compatível com líquido na cavidade", correta: true }, { texto: "Tecido ósseo duro", correta: false }, { texto: "Gás livre subcutâneo", correta: false }], topico: "semiotica", explicacao: "Pastoso/flutuante relaciona-se a líquido; Godet avalia deslocamento de fluido." },
+      { id: "cp-mc3", pergunta: "Qual par não corresponde ao termo técnico?", alternativas: [{ texto: "Êmese — vômito", correta: false }, { texto: "Tenesmo — esforço para urinar sem resultado", correta: true }, { texto: "Dispneia — dificuldade respiratória", correta: false }, { texto: "Polaciúria — micções frequentes", correta: false }], topico: "termos-tecnicos", explicacao: "Tenesmo é esforço para defecar; disúria é dor ao urinar." },
+      { id: "cp-mc4", pergunta: "Tratamento clínico envolve:", alternativas: [{ texto: "Apenas cirurgia", correta: false }, { texto: "Medicamentos e fluidoterapia", correta: true }, { texto: "Somente fitoterapia", correta: false }, { texto: "Jejum prolongado", correta: false }], topico: "diagnostico-prognostico", explicacao: "Tratamento clínico = fármacos + suporte (incluindo fluidos)." },
+      { id: "cp-mc5", pergunta: "Prescrição para animal cardiopata deve ser:", alternativas: [{ texto: "Somente verbal", correta: false }, { texto: "Para manipulação, pois uso pode ser prolongado", correta: true }, { texto: "Sem assinatura", correta: false }, { texto: "Apenas digitada sem carimbo", correta: false }], topico: "prescricao", explicacao: "O material enfatiza receita para manipulação em cardiopatas." },
+      { id: "cp-mc6", pergunta: "Receita A (amarela) é a mais restritiva porque inclui:", alternativas: [{ texto: "Somente vacinas", correta: false }, { texto: "Entorpecentes e psicotrópicos de alto potencial", correta: true }, { texto: "Shampoos antipulga", correta: false }, { texto: "Vitaminas", correta: false }], topico: "receituario", explicacao: "Listas A1, A2, A3 — controle máximo pela Portaria 344/98." },
+      { id: "cp-mc7", pergunta: "Cetamina e xilazina (controle especial vet) exigem:", alternativas: [{ texto: "Receita branca simples", correta: false }, { texto: "Receita SIPEAGRO", correta: true }, { texto: "Somente nota fiscal", correta: false }, { texto: "Receita de padaria", correta: false }], topico: "receituario", explicacao: "SIPEAGRO para medicamentos controlados de uso veterinário específicos." },
+      { id: "cp-mc8", pergunta: "Cardiomiopatia hipertrófica é mais prevalente em:", alternativas: [{ texto: "Cães de grande porte", correta: false }, { texto: "Felinos", correta: true }, { texto: "Aves", correta: false }, { texto: "Répteis", correta: false }], topico: "cardio-peq", explicacao: "CMH é a estrela (e o vilão) da cardiologia felina." },
+      { id: "cp-mc9", pergunta: "Edema pulmonar cardiogênico está ligado a:", alternativas: [{ texto: "ICC direita isolada", correta: false }, { texto: "Insuficiência cardíaca esquerda", correta: true }, { texto: "Apenas pneumonia bacteriana", correta: false }, { texto: "Hipotireoidismo sem ICC", correta: false }], topico: "cardio-peq", explicacao: "Congestão pulmonar por aumento de pressão capilar esquerda." },
+      { id: "cp-mc10", pergunta: "Sopro grau VI na escala do material:", alternativas: [{ texto: "Inaudível", correta: false }, { texto: "Muito alto, estetoscópio levemente afastado + frêmito", correta: true }, { texto: "Só com Doppler", correta: false }, { texto: "Normal fisiológico", correta: false }], topico: "cardio-peq", explicacao: "Grau VI é o extremo da escala de intensidade + frêmito precordial." },
+      { id: "cp-mc11", pergunta: "Endocardite degenerativa mitral é mais comum em:", alternativas: [{ texto: "Gatos jovens", correta: false }, { texto: "Cães pequenos, machos, idosos (predisposição)", correta: true }, { texto: "Equinos", correta: false }, { texto: "Suínos", correta: false }], topico: "dmvd", explicacao: "DMVD — cães pequenos idosos, gênero macho, fator genético." },
+      { id: "cp-mc12", pergunta: "Pimobendana no estágio B2 (material) atua como:", alternativas: [{ texto: "Antibiótico", correta: false }, { texto: "Inodilatador — aumenta contratilidade e ejeção", correta: true }, { texto: "Anticonvulsivante", correta: false }, { texto: "Antiemético", correta: false }], topico: "dmvd", explicacao: "Usada quando há progressão clínica/risco — inodilatador." },
+      { id: "cp-mc13", pergunta: "Endocardite infecciosa — agentes citados:", alternativas: [{ texto: "Só vírus", correta: false }, { texto: "Streptococcus, Staphylococcus, E. coli", correta: true }, { texto: "Só fungos", correta: false }, { texto: "Helmintos", correta: false }], topico: "endocardite", explicacao: "Bactérias gram + e E. coli frequentes; vegetações valvares ao eco." },
+      { id: "cp-mc14", pergunta: "Ecocardiograma na endocardite mostra vegetações descritas como:", alternativas: [{ texto: "Cálculo renal", correta: false }, { texto: "Aspecto em 'dedos de luva' / remodelamento valvar", correta: true }, { texto: "Derrame pericárdico seco", correta: false }, { texto: "Hidronefrose", correta: false }], topico: "endocardite", explicacao: "Vegetações e insuficiência secundária são marcas do quadro." },
+      { id: "cp-mc15", pergunta: "Paralisia de membros pélvicos, dor, ausência de pulso femoral em gato com CMH sugere:", alternativas: [{ texto: "Otite", correta: false }, { texto: "Tromboembolismo aórtico (saddle thrombus)", correta: true }, { texto: "Luxação de quadril bilateral", correta: false }, { texto: "Gastroenterite", correta: false }], topico: "ate-gato", explicacao: "ATE secundária a CMH — emergência felina clássica." },
+      { id: "cp-mc16", pergunta: "Derrame pericárdico com tamponamento — abordagem:", alternativas: [{ texto: "Ignorar se assintomático", correta: false }, { texto: "Pericardiocentese / retirada parcial do saco conforme caso", correta: true }, { texto: "Somente anti-inflamatório oral", correta: false }, { texto: "Banho e tosa", correta: false }], topico: "pericardio", explicacao: "Drenar o líquido alivia o tamponamento; exsudato séptico: ATB." },
+      { id: "cp-mc17", pergunta: "Neoplasias cardíacas comuns em idosos (material):", alternativas: [{ texto: "Hemangiossarcoma atrial direito e linfossarcoma", correta: true }, { texto: "Somente papiloma cutâneo", correta: false }, { texto: "Cisto ovariano", correta: false }, { texto: "Tumor de glândula anal", correta: false }], topico: "pericardio", explicacao: "Podem causar derrame pericárdico e sinais de baixo débito." },
+      { id: "cp-mc18", pergunta: "Convulsão é:", alternativas: [{ texto: "Sempre diagnóstico único 'epilepsia'", correta: false }, { texto: "Manifestação clínica — pode ter várias causas", correta: true }, { texto: "Sempre hipoglicemia", correta: false }, { texto: "Normal após banho", correta: false }], topico: "epilepsia", explicacao: "Convulsão é sinal, não doença única — investigar causa." },
+      { id: "cp-mc19", pergunta: "Melhor opção de benzodiazepínico em emergência convulsiva (material):", alternativas: [{ texto: "Diazepam sempre em qualquer espécie sem restrição", correta: false }, { texto: "Midazolam — mais hidrossolúvel e versátil", correta: true }, { texto: "Clordiazepóxido oral", correta: false }, { texto: "Placebo", correta: false }], topico: "epilepsia", explicacao: "Midazolam 1ª linha; vias IV/IM/SC/IN conforme cenário." },
+      { id: "cp-mc20", pergunta: "Fenobarbital crônico — monitoramento:", alternativas: [{ texto: "Nunca repetir exames", correta: false }, { texto: "Bioquímica hepática/renal periódica e níveis séricos", correta: true }, { texto: "Só contar convulsões", correta: false }, { texto: "Suspender se o animal comer ração", correta: false }], topico: "epilepsia", explicacao: "Hepatotoxicidade possível; faixa terapêutica ~20–35 µg/mL." },
+      { id: "cp-mc21", pergunta: "Brometo de sódio vs potássio (ideia do material):", alternativas: [{ texto: "Sódio em hipoadrenocorticismo; potássio em ICC", correta: true }, { texto: "São intercambiáveis sem critério", correta: false }, { texto: "Só para felinos", correta: false }, { texto: "Contraindicados em qualquer cão", correta: false }], topico: "epilepsia", explicacao: "Escolha do sal conforme comorbidade — brometo não em felinos." },
+      { id: "cp-mc22", pergunta: "Hipertensão sistêmica — causas citadas no material incluem:", alternativas: [{ texto: "Hipotireoidismo, hiperadrenocorticismo, diabetes", correta: true }, { texto: "Somente trauma craniano", correta: false }, { texto: "Somente verminose", correta: false }, { texto: "Exclusivamente alergia alimentar", correta: false }], topico: "hipertensao", explicacao: "SRAA e doenças endócrinas entram no jogo fisiopatológico." },
+      { id: "cp-mc23", pergunta: "Ausculta mitral no cão — região típica:", alternativas: [{ texto: "Último espaço intercostal direito caudal", correta: false }, { texto: "Hemi-tórax esquerdo (EIC 4–5 esquerdo)", correta: true }, { texto: "Região lombar", correta: false }, { texto: "Mandíbula", correta: false }], topico: "cardio-peq", explicacao: "Foco mitral à esquerda; tricúspide mais à direita (4º EIC d)." },
+      { id: "cp-mc24", pergunta: "Pneumonia vs edema pulmonar na lógica do conteúdo:", alternativas: [{ texto: "Ambos sempre sem febre", correta: false }, { texto: "Pneumonia: líquido inflamatório no parênquima; edema: não inflamatório", correta: true }, { texto: "São sinônimos", correta: false }, { texto: "Só radiografia de membros resolve", correta: false }], topico: "cardio-peq", explicacao: "Diferenciar etiologia guia antibiótico vs manejo de ICC." },
     ],
 
     dissertativas: [
-      { id: 'd1', pergunta: 'Descreva o tratamento completo para intoxicação por paracetamol em felinos.', respostaEsperada: 'NÃO induzir vômito. Oxigenioterapia e fluidoterapia. Acetilcisteína (antídoto — repõe glutationa hepática). Carvão ativado até 1h após a ingestão. Ácido ascórbico.', topico: 'intox-paracetamol' },
-      { id: 'd2', pergunta: 'Descreva o tratamento completo para intoxicação por organofosforado em felinos.', respostaEsperada: 'Oxigenioterapia. Anticonvulsivo (diazepam). Atropina (antídoto — reverte efeitos muscarínicos). Descontaminação oral: carvão ativado até 1h. Descontaminação cutânea: lavar com água morna e sabão neutro. Monitorar FC e FR.', topico: 'intox-organofosforado' },
-      { id: 'd3', pergunta: 'Quais são os sinais clínicos e o tratamento da lipidose hepática felina?', respostaEsperada: 'Sinais clínicos: anorexia prolongada, letargia, depressão, perda de peso, icterícia, desidratação e hepatomegalia. Tratamento: hepato e gastroprotetores, correção e monitoração hidroeletrolítica (K, P e Na), suporte nutricional, antieméticos e procinéticos.', topico: 'lipidose-hepatica' },
-      { id: 'd4', pergunta: 'Descreva o diagnóstico e tratamento da pancreatite felina.', respostaEsperada: 'Diagnóstico: exame físico + anamnese, lipase imunoespecífica SPEC FPLI (padrão-ouro), ultrassonografia abdominal, histopatológico, hemograma e bioquímicos. Tratamento: fluidoterapia, corrigir hipocalcemia e hipocalemia, analgesia (fentanil), antieméticos (ondasetrona), dieta hiperproteica (cobalamina e ômega 3).', topico: 'pancreatite' },
-      { id: 'd5', pergunta: 'Descreva o ciclo, patogenia e tratamento da platinossomose.', respostaEsperada: 'Ciclo: gato (HD) ingere HI (isópodes, caramujos, lagartixas) → infecção por predação → ovos nas fezes → HI ingerem ovos → gato preda HI. Patogenia: parasita migra para fígado, vesícula e ductos biliares → inflamação crônica → espessamento dos ductos → colangiohepatite, fibrose, cirrose ou obstrução biliar. Tratamento: Praziquantel.', topico: 'platinossomose' },
-      { id: 'd6', pergunta: 'Como diferenciar FHV de FCV clinicamente? Qual o tratamento?', respostaEsperada: 'FHV: aborto, morte neonatal, ceratite ulcerativa, espirros frequentes, secreção nasal/ocular intensa, conjuntivite, febre, apatia. FCV: poliartrite, pneumonia branda, estomatite ulcerativa, úlceras orais, espirros leve a moderado, sialorreia, febre, apatia, claudicação. Tratamento: dipirona (febre), Omiclom A orabase (úlceras orais), antibiótico (amoxicilina, azitromicina ou doxiciclina).', topico: 'crvf-fhv-fcv' },
-      { id: 'd7', pergunta: 'Descreva o tratamento completo da rinite felina.', respostaEsperada: 'Fluidoterapia. Lavagem nasal e nebulização. Descongestionantes e histamínicos (alívio da secreção e espirros). Anti-inflamatórios (meloxicam ou prednisolona). Antifúngico e antibiótico (apenas em caso confirmatório). Cirurgia (neoplasias e pólipos).', topico: 'rinite' },
-      { id: 'd8', pergunta: 'Qual a diferença entre asma e bronquite felina? Qual o tratamento?', respostaEsperada: 'Asma: tosse episódica, postura ortopneica, eosinófilos >20%, quadro agudo (cianose). Bronquite: tosse frequente, neutrófilos >10%, quadro crônico (dispneia, taquipneia, sibilos). Tratamento: oxigenioterapia, broncodilatadores (terbutalina), AIES (prednisolona), eliminação do alérgeno.', topico: 'bronquite-asma' },
-      { id: 'd9', pergunta: 'Descreva o tratamento da gengivoestomatite crônica felina.', respostaEsperada: 'Analgésico (tramadol). AIE (prednisolona) ou AINE (meloxicam). Antibiótico em quadros agudos, pré ou pós-cirúrgico (metronidazol).', topico: 'odontologia-felina' },
-      { id: 'd10', pergunta: 'Quais os cuidados iniciais com um neonato órfão felino? Descreva na ordem correta.', respostaEsperada: '1) Limpar com gaze/flanela levemente umedecida com água morna. 2) Secar cuidadosamente e aquecer. 3) Alimentar. 4) Estimular micção e defecação.', topico: 'neonato-orfao' },
-      { id: 'd11', pergunta: 'Quais são os 5 princípios Cat Friendly e como orientar o tutor para transporte?', respostaEsperada: '5 princípios: lugar seguro, múltiplos recursos ambientais, brincadeiras predatórias, relação positiva/negativa homem-gato, estímulos sensoriais agradáveis. Transporte: acostumar na caixa, cobrir com pano/toalha, ensaiar visitas ao vet.', topico: 'catfriendly' },
-      { id: 'd12', pergunta: 'Quais os efeitos indesejados de quinolonas e AINES em gatos?', respostaEsperada: 'Quinolonas: incoordenação, tremor, nistagmo, convulsão e cegueira aguda irreversível. AINES: intoxicação, anorexia, vômitos, letargia, melena, ataxia e polidipsia.', topico: 'farmacos-quinolona-aines' },
+      { id: "cp-d1", pergunta: "Liste os quatro blocos do exame clínico com os percentuais aproximados do material.", respostaEsperada: "Resenha ~0%; anamnese ~50%; exame físico ~35%; exames complementares ~15%.", topico: "exame-clinico" },
+      { id: "cp-d2", pergunta: "Explique inspeção, percussão, palpação e auscultação em uma linha cada.", respostaEsperada: "Inspeção: observação visual global. Percussão: batidas para sons de cavidades. Palpação: tacto da consistência e conteúdos. Auscultação: estetoscópio em traqueia, pulmão, coração e TGI.", topico: "semiotica" },
+      { id: "cp-d3", pergunta: "O que deve constar na prescrição médica veterinária (itens principais)?", respostaEsperada: "Cabeçalho (clínica, endereço, telefone); identificação do paciente (nome, espécie, idade, raça, sexo) e tutor; medicamento (nome, concentração, quantidade); tipo de uso; instruções (via, intervalo, duração). Caneta preta, sem rasura, assinatura e carimbo.", topico: "prescricao" },
+      { id: "cp-d4", pergunta: "Compare receitas A, B e C quanto ao grau de restrição.", respostaEsperada: "A (amarela): mais restritiva — entorpecentes/psicróticos fortes. B (azul): intermediária. C (branca): mais flexível entre as controladas, 2 vias. Todas sob Portaria 344/98.", topico: "receituario" },
+      { id: "cp-d5", pergunta: "Descreva ICC esquerda vs direita com sinais-chave.", respostaEsperada: "Esquerda: congestão pulmonar, edema pulmonar, dispneia, tosse cardíaca. Direita: congestão sistêmica, ascite, hepatomegalia, edema de membros pélvicos, efusão pleural.", topico: "cardio-peq" },
+      { id: "cp-d6", pergunta: "Monte um plano terapêutico para DMVD estágio B2/C com fármacos do material.", respostaEsperada: "IECA (benazepril/enalapril), diurético de alça (furosemida), espironolactona se indicado, pimobendana conforme estágio, dieta hipossódica, repouso relativo, monitorar função renal e eletrólitos.", topico: "dmvd" },
+      { id: "cp-d7", pergunta: "Como diferenciar tosse cardíaca de tosse respiratória?", respostaEsperada: "Cardíaca: coração aumentado comprime/desloca traqueia dorsalmente — tosse seca, improdutiva, fraca. Respiratória: intensa e produtiva/forte, ligada a vias/pulmão.", topico: "cardio-peq" },
+      { id: "cp-d8", pergunta: "Emergência convulsiva: passos com midazolam e se refratário?", respostaEsperada: "Midazolam IV/IM/IN ~0,3 mg/kg até 2–3 doses/24h; se não cessar, considerar anestesia curta (propofol/cetamina) para proteger o cérebro; oxigenoterapia, resfriamento se hipertermia, tratar causa de base.", topico: "epilepsia" },
+      { id: "cp-d9", pergunta: "Quando pensar em hipoglicemia e hipocalcemia como causa de convulsão?", respostaEsperada: "Filhote pequeno: hipoglicemia. Fêmea recentemente parida: eclâmpsia/hipocalcemia. Sempre glicemia e Ca no trabalho.", topico: "epilepsia" },
+      { id: "cp-d10", pergunta: "Tratamento de ATE felina segundo o roteiro da aula.", respostaEsperada: "Estabilizar paciente; analgesia (butorfanol); anticoagulação (heparina); AAS; repouso absoluto; prognóstico reservado.", topico: "ate-gato" },
     ],
 
     casosClinicos: [
       {
-        id: 'cc1', titulo: 'Caso 1 — Intoxicação por Paracetamol', topico: 'intox-paracetamol',
-        cenario: 'Félix, gato doméstico, 4 anos, é trazido pelo tutor com histórico de ingestão acidental de paracetamol há 2 horas. No exame físico: mucosas cianóticas, ictéricas, edema de face e membros, depressão e letargia.',
+        id: "cp-cc1",
+        titulo: "Caso — Cão com sopro e tosse seca",
+        topico: "dmvd",
+        cenario:
+          "Mel, pinscher 11 anos, 3 kg, tosse leve noturna, intolerância a exercícios, sopro holossistólico forte no 5º EIC esquerdo. Radiografia: veia pulmonar congestiva.",
         perguntas: [
-          { texto: 'Quais são os sinais clínicos compatíveis com este quadro?', resposta: 'Cianose (mucosas cianóticas), icterícia (mucosas ictéricas), edema de face e membros, depressão e letargia. Outros sinais possíveis: mucosas pálidas, vômitos, anorexia e hipóxia.', tipo: 'dissertativa' },
-          { texto: 'Qual é o tratamento emergencial indicado? Liste todos os passos.', resposta: '1) NÃO induzir vômito\n2) Oxigenioterapia e fluidoterapia\n3) Acetilcisteína (antídoto)\n4) Carvão ativado (até 1h após ingestão — neste caso já passou 2h, avaliar)\n5) Ácido ascórbico', tipo: 'dissertativa' },
-          { texto: 'Deve-se induzir o vômito neste paciente? Justifique.', resposta: 'NÃO. A indução de vômito não é recomendada na intoxicação por paracetamol em gatos pois o paracetamol causa metemoglobinemia e lesão hepática, e a emese pode piorar o quadro clínico. Além disso, já se passaram 2 horas da ingestão.', tipo: 'dissertativa' },
-        ]
+          { texto: "Suspeita principal e por quê?", resposta: "Degeneração mixomatosa da valva mitral (DMVD) — cão pequeno idoso, sopro mitral, sinais de congestão pulmonar/tosse cardíaca.", tipo: "dissertativa" },
+          { texto: "Três classes de fármacos do material + um não farmacológico.", resposta: "IECA (benazepril/enalapril), diurético (furosemida), inodilatador (pimobendana) conforme estágio; dieta hipossódica e repouso.", tipo: "dissertativa" },
+          { texto: "Por que a tosse pode ser 'cardíaca' neste caso?", resposta: "Aumento atrial/esquerda desloca traqueia dorsalmente, irritando mucosa — tosse seca e improdutiva.", tipo: "dissertativa" },
+        ],
       },
       {
-        id: 'cc2', titulo: 'Caso 2 — Lipidose Hepática', topico: 'lipidose-hepatica',
-        cenario: 'Luna, gata SRD, 7 anos, apresenta anorexia há 10 dias, letargia intensa, perda de peso progressiva, mucosas ictéricas e hepatomegalia. A tutora relata que a gata parou de comer após chegada de novo pet.',
+        id: "cp-cc2",
+        titulo: "Caso — Gato com dispneia e membros frios",
+        topico: "ate-gato",
+        cenario:
+          "Nina, SRD 6 anos, cardiopata conhecida, de repente não usa membros pélvicos, vocaliza dor, pulso femoral ausente, mucosas pálidas.",
         perguntas: [
-          { texto: 'Qual é a suspeita diagnóstica principal?', resposta: 'Lipidose hepática felina. A anorexia prolongada (10 dias) em gata com icterícia e hepatomegalia, desencadeada por estresse (novo pet), é altamente sugestiva.', tipo: 'dissertativa' },
-          { texto: 'Quais exames confirmariam? Mencione o padrão-ouro.', resposta: 'Hemograma (anemia com poiquilocitose), bioquímicos (ALT, GGT e FA aumentados, hipoalbuminemia, hipocalcemia, hipofosfatemia e hiperamonemia), ultrassonografia abdominal e histopatológico (padrão-ouro).', tipo: 'dissertativa' },
-          { texto: 'Descreva o tratamento completo.', resposta: 'Hepato e gastroprotetores. Correção e monitoração hidroeletrolítica (K, P e Na). Suporte nutricional (fundamental — pode ser necessário sonda esofágica). Antieméticos e procinéticos.', tipo: 'dissertativa' },
-        ]
+          { texto: "Diagnóstico provável?", resposta: "Tromboembolismo aórtico (saddle thrombus) secundário a CMH.", tipo: "dissertativa" },
+          { texto: "Conduta imediata (material).", resposta: "Estabilizar, analgesia com butorfanol, heparina, AAS, repouso; explicar prognóstico reservado ao tutor.", tipo: "dissertativa" },
+        ],
       },
       {
-        id: 'cc3', titulo: 'Caso 3 — Asma Felina', topico: 'bronquite-asma',
-        cenario: 'Mimi, gata Maine Coon, 3 anos, chega com tosse episódica, postura ortopneica e em um episódio teve cianose. Hemograma: eosinofilia >20%. Radiografia: padrão intersticial.',
+        id: "cp-cc3",
+        titulo: "Caso — Prescrição incompleta",
+        topico: "prescricao",
+        cenario:
+          "Estagiário redige receita só com nome do remédio e 'dar para o cão'. Tutor compra dose humana errada.",
         perguntas: [
-          { texto: 'Qual é o diagnóstico mais provável?', resposta: 'Asma felina. Baseado em: tosse episódica, postura ortopneica, episódio de cianose (quadro agudo), eosinofilia >20% e padrão intersticial na radiografia.', tipo: 'dissertativa' },
-          { texto: 'Como diferenciar de bronquite felina?', resposta: 'Asma: tosse episódica, postura ortopneica, eosinófilos >20%, quadro AGUDO (cianose).\nBronquite: tosse frequente, neutrófilos >10%, quadro CRÔNICO (dispneia, taquipneia, respiração com esforço expiratório e sibilos/chiados na ausculta).', tipo: 'dissertativa' },
-          { texto: 'Qual o tratamento indicado?', resposta: 'Oxigenioterapia, broncodilatadores (terbutalina), AIES (prednisolona) e eliminação do alérgeno.', tipo: 'dissertativa' },
-        ]
+          { texto: "O que faltou na prescrição?", resposta: "Identificação completa do paciente e tutor, concentração, quantidade, via, intervalo, duração, assinatura e carimbo; evitar abreviaturas.", tipo: "dissertativa" },
+          { texto: "Por que cardiopatas precisam de manipulação?", resposta: "Tratamento prolongado — doses precisas e rastreabilidade do que foi prescrito.", tipo: "dissertativa" },
+        ],
       },
       {
-        id: 'cc4', titulo: 'Caso 4 — Platinossomose', topico: 'platinossomose',
-        cenario: 'Bob, gato caramelo, 2 anos, interior, apresenta vômitos, anorexia, perda de peso, icterícia e letargia. Caça lagartixas e caramujos. Hemograma: eosinofilia após 3 semanas. Bioquímicos: ALT, AST, GGT e FA discretamente aumentadas.',
+        id: "cp-cc4",
+        titulo: "Caso — Convulsão em filhote",
+        topico: "epilepsia",
+        cenario:
+          "Chihuahua 8 semanas, 600 g, em jejum prolongado após viagem, tremores e convulsão na chegada à clínica.",
         perguntas: [
-          { texto: 'Qual parasita é o agente mais provável?', resposta: 'Platynosomum spp. (platinossomose). Gato de interior que caça lagartixas e caramujos (HI), com sinais hepáticos e eosinofilia.', tipo: 'dissertativa' },
-          { texto: 'Descreva o ciclo deste parasita.', resposta: 'Gato (hospedeiro definitivo) ingere HI (isópodes terrestres, caramujos ou lagartixas) → infecção por predação → parasita migra para fígado, vesícula biliar e ductos biliares → eliminação dos ovos nas fezes → HI ingerem os ovos → gato preda os HI, completando o ciclo.', tipo: 'dissertativa' },
-          { texto: 'Qual o tratamento?', resposta: 'Praziquantel.', tipo: 'dissertativa' },
-        ]
+          { texto: "Primeira hipótese metabólica?", resposta: "Hipoglicemia — filhote pequeno, jejum, estresse.", tipo: "dissertativa" },
+          { texto: "Após estabilizar glicemia, qual benzodiazepínico de 1ª escolha se crise persistir?", resposta: "Midazolam (0,3 mg/kg) IV/IM/IN conforme disponibilidade.", tipo: "dissertativa" },
+        ],
       },
       {
-        id: 'cc5', titulo: 'Caso 5 — Rinite Felina', topico: 'rinite',
-        cenario: 'Nala, gata Persa, 5 anos, espirros paroxísticos, secreção nasal serosanguinolenta UNILATERAL há 3 semanas, epífora e anorexia.',
+        id: "cp-cc5",
+        titulo: "Caso — Endocardite",
+        topico: "endocardite",
+        cenario:
+          "Pastor alemão 5 anos, febre, prostração, novo sopro, leucocitose com desvio à esquerda, hemocultura positiva.",
         perguntas: [
-          { texto: 'A rinite unilateral sugere quais causas?', resposta: 'Corpo estranho, neoplasias, pólipos, infecção fúngica ou fístula oronasal. (Rinite bilateral sugere: viral e inflamatória.)', tipo: 'dissertativa' },
-          { texto: 'Quais exames diagnósticos solicitar?', resposta: 'Rinoscopia, anamnese detalhada, radiografia/tomografia (neoplasias e corpo estranho), citologia da secreção, cultura bacteriana e fúngica, PCR viral.', tipo: 'dissertativa' },
-          { texto: 'Descreva o tratamento completo.', resposta: 'Fluidoterapia. Lavagem nasal e nebulização. Descongestionantes e histamínicos (alívio da secreção e espirros). Anti-inflamatórios (meloxicam ou prednisolona). Antifúngico e antibiótico (apenas em caso confirmatório). Cirurgia (se neoplasia ou pólipo).', tipo: 'dissertativa' },
-        ]
+          { texto: "Diagnóstico e exame de imagem-chave?", resposta: "Endocardite bacteriana — ecocardiograma com vegetações valvares ('dedos de luva').", tipo: "dissertativa" },
+          { texto: "Linha de tratamento.", resposta: "Antibioticoterapia prolongada guiada por hemocultura/antibiograma; suporte clínico; monitorar ICC.", tipo: "dissertativa" },
+        ],
       },
       {
-        id: 'cc6', titulo: 'Caso 6 — CRVF (Calicivírus)', topico: 'crvf-fhv-fcv',
-        cenario: 'Thor, gato, 1 ano, vacinado apenas com V8, apresenta úlceras orais, poliartrite, espirros leve a moderados, sialorreia e claudicação.',
+        id: "cp-cc6",
+        titulo: "Caso — Derrame pericárdico",
+        topico: "pericardio",
+        cenario:
+          "Dogue alemão 7 anos, abafamento cardíaco, pulso paradoxal, radiografia com silhueta globosa.",
         perguntas: [
-          { texto: 'Qual vírus é o agente mais provável? Como diferenciar do FHV?', resposta: 'FCV (Calicivírus felino). Diferenças: FCV causa úlceras ORAIS, poliartrite, claudicação, sialorreia, espirros leve a moderados. FHV causa ceratite ulcerativa, espirros frequentes, secreção nasal/ocular INTENSA, conjuntivite, aborto.', tipo: 'dissertativa' },
-          { texto: 'Qual o tratamento?', resposta: 'Dipirona (febre), Omiclom A orabase (úlceras orais), antibiótico (amoxicilina, azitromicina ou doxiciclina).', tipo: 'dissertativa' },
-          { texto: 'Qual vacina deveria ter sido usada? Esquema para adultos?', resposta: 'Vacina V3 (quádrupla felina — FHV, FCV, FPV). V8 é vacina de CÃES. Esquema para adultos: duas doses com intervalo de 21/30 dias, reforço a cada 3 anos ou anual.', tipo: 'dissertativa' },
-        ]
-      },
-      {
-        id: 'cc7', titulo: 'Caso 7 — Gengivite Felina', topico: 'odontologia-felina',
-        cenario: 'Simba, gato, 4 anos, gengivite confirmada. Nunca fez profilaxia dental.',
-        perguntas: [
-          { texto: 'Como é feito o diagnóstico?', resposta: 'Radiografia intraoral, anamnese + exame físico oral detalhado, hemograma e bioquímico hepático e renal, sondagem periodontal.', tipo: 'dissertativa' },
-          { texto: 'Qual é o tratamento?', resposta: 'Limpeza supra e subgengival, remoção dos depósitos dentários (placa e cálculo) e profilaxia.', tipo: 'dissertativa' },
-          { texto: 'Como diferenciar de periodontite no tratamento?', resposta: 'Gengivite: limpeza supra/subgengival + remoção de placa/cálculo + profilaxia.\nPeriodontite: limpeza supra/subgengival + extração dentária com perda de inserção + profilaxia rigorosa.', tipo: 'dissertativa' },
-        ]
-      },
-      {
-        id: 'cc8', titulo: 'Caso 8 — Intoxicação por Organofosforado', topico: 'intox-organofosforado',
-        cenario: 'Cleo, gata, 6 anos, convulsões, bradicardia, cianose, sialorreia e paralisia. Tutor aplicou carrapaticida organofosforado há 1 hora.',
-        perguntas: [
-          { texto: 'Quais são os sinais clínicos de intoxicação por organofosforado?', resposta: 'Convulsões, vômitos, hiper ou hipoexcitabilidade, sialorreia, diarreia, apatia, bradicardia, cianose, paralisia e morte.', tipo: 'dissertativa' },
-          { texto: 'Qual é o antídoto e por que é usado?', resposta: 'Atropina. É usada porque reverte os efeitos muscarínicos da intoxicação: hipersalivação, bradicardia, miose e secreções pulmonares. É um anticolinérgico que bloqueia os receptores muscarínicos.', tipo: 'dissertativa' },
-          { texto: 'Descreva o tratamento completo incluindo descontaminação.', resposta: 'Oxigenioterapia. Anticonvulsivo (diazepam). Atropina (antídoto). Descontaminação oral: carvão ativado até 1h. Descontaminação cutânea: lavar com água morna e sabão neutro. Monitorar FC e FR.', tipo: 'dissertativa' },
-        ]
+          { texto: "Conduta intervencionista urgente?", resposta: "Pericardiocentese (7º EIC citado no material) para aliviar tamponamento; investigar neoplasia vs idiopático vs séptico.", tipo: "dissertativa" },
+          { texto: "Neoplasias cardíacas citadas?", resposta: "Hemangiossarcoma atrial direito e linfossarcoma em animais senis.", tipo: "dissertativa" },
+        ],
       },
     ],
 
-    // Tags dos tópicos para o sistema de pontos fracos
     topicos: {
-      'intox-paracetamol': 'Intoxicação por Paracetamol',
-      'intox-organofosforado': 'Intoxicação por Organofosforado',
-      'lipidose-hepatica': 'Lipidose Hepática',
-      'pancreatite': 'Pancreatite Felina',
-      'platinossomose': 'Platinossomose',
-      'bronquite-asma': 'Bronquite e Asma Felina',
-      'rinite': 'Rinite Felina',
-      'crvf-fhv-fcv': 'CRVF — FHV e FCV',
-      'odontologia-felina': 'Odontologia Felina',
-      'neonato-orfao': 'Neonato Órfão',
-      'catfriendly': 'Práticas Cat Friendly',
-      'farmacos-quinolona-aines': 'Fármacos — Quinolonas e AINES',
-    }
+      "exame-clinico": "Exame clínico — estrutura e vitais",
+      semiotica: "Métodos semióticos",
+      "diagnostico-prognostico": "Diagnóstico, tratamento e prognóstico",
+      "termos-tecnicos": "Termos técnicos por sistema",
+      prescricao: "Prescrição e boas práticas",
+      receituario: "Receituário — Portaria 344, SIPEAGRO, MAPA",
+      "cardio-peq": "Cardiologia de pequenos animais",
+      dmvd: "Degeneração mitral e manejo de ICC",
+      hipertensao: "Hipertensão arterial sistêmica",
+      "ate-gato": "Tromboembolismo aórtico felino",
+      pericardio: "Doenças pericárdicas e neoplasias",
+      endocardite: "Endocardite infecciosa",
+      respiratorio: "Padrões respiratórios",
+      epilepsia: "Convulsões e epilepsia",
+    },
   },
 
-  // ============================================================
-  // TEMPLATE PARA NOVA MATÉRIA — copie e preencha:
-  // ============================================================
-  // novaMateria: {
-  //   id: 'novaMateria',
-  //   nome: 'Nome da Matéria',
-  //   icone: '📚',
-  //   descricao: 'Descrição curta',
-  //   corPrimaria: '#7c3aed',
-  //   corSecundaria: '#f59e0b',
-  //   flashcards: [],
-  //   multiplaEscolha: [],
-  //   dissertativas: [],
-  //   casosClinicos: [],
-  //   topicos: {}
-  // },
+  poaTecnologia: {
+    id: "poaTecnologia",
+    ordem: 30,
+    emBreve: true,
+    nome: "Tecnologia POA",
+    icone: "🔧",
+    descricao: "Vai entrando aos poucos — o João atualiza nos próximos dias. Sem pagamento, só calendário.",
+    corPrimaria: "#475569",
+    corSecundaria: "#94a3b8",
+    cramFlashN: 18,
+    cramMcN: 12,
+    flashcards: [],
+    multiplaEscolha: [],
+    dissertativas: [],
+    casosClinicos: [],
+    topicos: {},
+  },
+
+  medicinaVet: {
+    id: "medicinaVet",
+    ordem: 40,
+    emBreve: true,
+    nome: "Técnica cirúrgica vet",
+    icone: "📘",
+    descricao: "Conteúdo futuro no app — em breve.",
+    corPrimaria: "#1d4ed8",
+    corSecundaria: "#60a5fa",
+    cramFlashN: 18,
+    cramMcN: 12,
+    flashcards: [],
+    multiplaEscolha: [],
+    dissertativas: [],
+    casosClinicos: [],
+    topicos: {},
+  },
+
+  inspecaoPOA1: {
+    id: "inspecaoPOA1",
+    ordem: 50,
+    emBreve: true,
+    nome: "Inspeção POA-1",
+    icone: "📋",
+    descricao: "Em breve — matéria será adicionada quando chegar a vez.",
+    corPrimaria: "#b45309",
+    corSecundaria: "#fbbf24",
+    cramFlashN: 18,
+    cramMcN: 12,
+    flashcards: [],
+    multiplaEscolha: [],
+    dissertativas: [],
+    casosClinicos: [],
+    topicos: {},
+  },
+
+  ornitopatologia: {
+    id: "ornitopatologia",
+    ordem: 60,
+    emBreve: true,
+    nome: "Ornitopatologia",
+    icone: "🐦",
+    descricao: "Em breve no calendário de estudos.",
+    corPrimaria: "#0e7490",
+    corSecundaria: "#22d3ee",
+    cramFlashN: 18,
+    cramMcN: 12,
+    flashcards: [],
+    multiplaEscolha: [],
+    dissertativas: [],
+    casosClinicos: [],
+    topicos: {},
+  },
+
+  ginecologiaObstetricia: {
+    id: "ginecologiaObstetricia",
+    ordem: 70,
+    emBreve: true,
+    nome: "Ginecologia e obstetrícia animal",
+    icone: "🤰",
+    descricao: "Em breve — slot reservado para quando for a vez da prova.",
+    corPrimaria: "#be185d",
+    corSecundaria: "#f472b6",
+    cramFlashN: 18,
+    cramMcN: 12,
+    flashcards: [],
+    multiplaEscolha: [],
+    dissertativas: [],
+    casosClinicos: [],
+    topicos: {},
+  },
+
+  anestesiologiaAnimal: {
+    id: "anestesiologiaAnimal",
+    ordem: 80,
+    emBreve: true,
+    nome: "Anestesiologia animal",
+    icone: "💉",
+    descricao: "Em breve — conteúdo entra com o tempo.",
+    corPrimaria: "#6d28d9",
+    corSecundaria: "#c4b5fd",
+    cramFlashN: 18,
+    cramMcN: 12,
+    flashcards: [],
+    multiplaEscolha: [],
+    dissertativas: [],
+    casosClinicos: [],
+    topicos: {},
+  },
+
 };

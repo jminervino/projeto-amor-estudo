@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FelixStudy — App de Estudos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="app-header" id="app-header" hidden>
+      <button type="button" class="btn btn-ghost btn-back" id="btn-global-back" aria-label="Voltar">← Voltar</button>
+      <div class="header-brand">
+        <span class="header-icon" id="header-icon">🐱</span>
+        <span class="header-title" id="header-title">FelixStudy</span>
+      </div>
+      <div class="header-spacer"></div>
+    </header>
+
+    <!-- Seleção de matéria -->
+    <section id="view-subjects" class="view view-active" aria-label="Escolher matéria">
+      <div class="hero">
+        <h1 class="hero-title">FelixStudy <span class="emoji">🐱</span></h1>
+        <p class="hero-sub">Escolha a matéria para estudar. Você pode adicionar mais matérias em <code class="inline-code">data.js</code>.</p>
+      </div>
+      <div class="subject-grid" id="subject-grid"></div>
+    </section>
+
+    <!-- Home da matéria -->
+    <section id="view-home" class="view" aria-label="Início">
+      <div class="hero hero-compact">
+        <p class="badge" id="home-materia-badge">Matéria</p>
+        <h1 class="hero-title" id="home-title">FelixStudy</h1>
+        <p class="hero-sub" id="home-desc"></p>
+      </div>
+
+      <div class="stats-card fade-in">
+        <div class="stats-row">
+          <span>Questões respondidas</span>
+          <strong id="stat-answered">0</strong>
+        </div>
+        <div class="stats-row">
+          <span>Taxa de acerto</span>
+          <strong id="stat-rate">—</strong>
+        </div>
+        <div class="stats-row">
+          <span>Sequência atual <span class="emoji">🔥</span></span>
+          <strong id="stat-streak">0</strong>
+        </div>
+        <div class="stats-row">
+          <span>Recorde de sequência</span>
+          <strong id="stat-best-streak">0</strong>
+        </div>
+      </div>
+
+      <p class="motivation" id="home-motivation"></p>
+
+      <div class="mode-grid">
+        <button type="button" class="mode-card" data-mode="flash">
+          <span class="mode-icon">🃏</span>
+          <span class="mode-name">Flashcards</span>
+          <span class="mode-hint">Flip 3D · Sabia / Não sabia</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="mc">
+          <span class="mode-icon">✓</span>
+          <span class="mode-name">Múltipla escolha</span>
+          <span class="mode-hint">4 alternativas · foco em tratamentos</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="written">
+          <span class="mode-icon">✍️</span>
+          <span class="mode-name">Resposta escrita</span>
+          <span class="mode-hint">Sem dicas · autoavaliação</span>
+        </button>
+        <button type="button" class="mode-card" data-mode="cases">
+          <span class="mode-icon">🏥</span>
+          <span class="mode-name">Casos clínicos</span>
+          <span class="mode-hint">Cenários · tratamentos</span>
+        </button>
+      </div>
+
+      <div class="home-actions">
+        <button type="button" class="btn btn-secondary" id="btn-change-subject">Trocar matéria</button>
+        <button type="button" class="btn btn-weak" id="btn-weak-home" hidden>📋 Painel de pontos fracos</button>
+      </div>
+
+      <p class="weak-banner" id="weak-only-banner" hidden>Modo ativo: praticando apenas tópicos com mais erros.</p>
+    </section>
+
+    <!-- Flashcards -->
+    <section id="view-flash" class="view" aria-label="Flashcards">
+      <div class="session-top">
+        <div class="progress-wrap">
+          <div class="progress-bar" id="flash-progress" style="--p: 0%"></div>
+        </div>
+        <p class="session-meta"><span id="flash-counter">0 / 0</span> · <span id="flash-streak">🔥 0</span></p>
+      </div>
+      <div class="flash-area">
+        <div class="flash-card-wrap fade-in" id="flash-card-wrap">
+          <button type="button" class="flash-card" id="flash-card" aria-label="Virar cartão">
+            <div class="flash-face flash-front">
+              <p class="flash-label">Frente</p>
+              <p class="flash-text" id="flash-front-text"></p>
+            </div>
+            <div class="flash-face flash-back">
+              <p class="flash-label">Verso</p>
+              <p class="flash-text flash-text-mono" id="flash-back-text"></p>
+            </div>
+          </button>
+        </div>
+        <p class="hint-tap" id="flash-tap-hint">Toque no cartão para virar</p>
+        <div class="flash-actions" id="flash-actions" hidden>
+          <button type="button" class="btn btn-success" id="flash-knew">✅ Sabia</button>
+          <button type="button" class="btn btn-danger" id="flash-didnt">❌ Não sabia</button>
+        </div>
+      </div>
+      <p class="feedback-msg" id="flash-feedback" role="status"></p>
+    </section>
+
+    <!-- Múltipla escolha -->
+    <section id="view-mc" class="view" aria-label="Múltipla escolha">
+      <div class="session-top">
+        <div class="progress-wrap">
+          <div class="progress-bar" id="mc-progress" style="--p: 0%"></div>
+        </div>
+        <p class="session-meta"><span id="mc-counter">0 / 0</span> · <span id="mc-streak">🔥 0</span></p>
+      </div>
+      <article class="question-card fade-in" id="mc-card">
+        <p class="question-text" id="mc-question"></p>
+        <div class="alternatives" id="mc-alternatives"></div>
+        <p class="explanation" id="mc-explanation" hidden></p>
+        <button type="button" class="btn btn-primary btn-next" id="mc-next" hidden>Próxima →</button>
+      </article>
+      <p class="feedback-msg" id="mc-feedback" role="status"></p>
+    </section>
+
+    <!-- Resposta escrita -->
+    <section id="view-written" class="view" aria-label="Resposta escrita">
+      <div class="session-top">
+        <div class="progress-wrap">
+          <div class="progress-bar" id="written-progress" style="--p: 0%"></div>
+        </div>
+        <p class="session-meta"><span id="written-counter">0 / 0</span> · <span id="written-streak">🔥 0</span></p>
+      </div>
+      <article class="question-card fade-in">
+        <p class="question-text" id="written-question"></p>
+        <label class="sr-only" for="written-input">Sua resposta</label>
+        <textarea id="written-input" class="written-input" rows="6" autocomplete="off" spellcheck="true"></textarea>
+        <div class="written-actions-row">
+          <button type="button" class="btn btn-primary" id="written-submit">Enviar resposta</button>
+        </div>
+        <div id="written-reveal" class="written-reveal" hidden>
+          <div class="compare-grid">
+            <div class="compare-box">
+              <h3>Sua resposta</h3>
+              <p class="compare-text" id="written-yours"></p>
+            </div>
+            <div class="compare-box compare-model">
+              <h3>Resposta modelo</h3>
+              <p class="compare-text flash-text-mono" id="written-model"></p>
+            </div>
+          </div>
+          <p class="self-eval-label">Como você avalia?</p>
+          <div class="self-eval-btns">
+            <button type="button" class="btn btn-success" data-eval="hit">✅ Acertei</button>
+            <button type="button" class="btn btn-warn" data-eval="partial">⚠️ Parcial</button>
+            <button type="button" class="btn btn-danger" data-eval="miss">❌ Errei</button>
+          </div>
+        </div>
+      </article>
+      <p class="feedback-msg" id="written-feedback" role="status"></p>
+    </section>
+
+    <!-- Casos clínicos -->
+    <section id="view-cases" class="view" aria-label="Casos clínicos">
+      <div class="session-top">
+        <div class="progress-wrap">
+          <div class="progress-bar" id="cases-progress" style="--p: 0%"></div>
+        </div>
+        <p class="session-meta"><span id="cases-counter">Caso 0 / 0</span> · Pergunta <span id="cases-q-index">0</span>/<span id="cases-q-total">0</span></p>
+      </div>
+      <article class="question-card case-card fade-in">
+        <h2 class="case-title" id="case-title"></h2>
+        <p class="case-scenario" id="case-scenario"></p>
+        <div class="case-divider"></div>
+        <p class="question-text" id="case-question-text"></p>
+        <label class="sr-only" for="case-input">Sua resposta</label>
+        <textarea id="case-input" class="written-input" rows="5" autocomplete="off"></textarea>
+        <div class="written-actions-row">
+          <button type="button" class="btn btn-primary" id="case-submit">Ver resposta modelo</button>
+        </div>
+        <div id="case-reveal" class="written-reveal" hidden>
+          <div class="compare-box compare-model full-width">
+            <h3>Resposta modelo</h3>
+            <p class="compare-text flash-text-mono" id="case-model"></p>
+          </div>
+          <p class="self-eval-label">Autoavaliação</p>
+          <div class="self-eval-btns">
+            <button type="button" class="btn btn-success" data-case-eval="hit">✅ Acertei</button>
+            <button type="button" class="btn btn-warn" data-case-eval="partial">⚠️ Parcial</button>
+            <button type="button" class="btn btn-danger" data-case-eval="miss">❌ Errei</button>
+          </div>
+        </div>
+      </article>
+      <p class="feedback-msg" id="cases-feedback" role="status"></p>
+    </section>
+
+    <!-- Painel pontos fracos -->
+    <section id="view-weak" class="view" aria-label="Pontos fracos">
+      <div class="hero hero-compact">
+        <h1 class="hero-title">📋 Pontos fracos</h1>
+        <p class="hero-sub" id="weak-materia-name"></p>
+      </div>
+      <div class="weak-summary stats-card" id="weak-summary"></div>
+      <ul class="weak-list" id="weak-list"></ul>
+      <div class="weak-suggestions" id="weak-suggestions" hidden>
+        <h2 class="section-title">Sugestões de revisão</h2>
+        <p class="section-sub">Perguntas dos tópicos que você mais errou (amostra aleatória).</p>
+        <ul class="suggestion-list" id="suggestion-list"></ul>
+      </div>
+      <div class="weak-actions">
+        <button type="button" class="btn btn-primary" id="btn-practice-weak">🔄 Praticar só os pontos fracos</button>
+        <button type="button" class="btn btn-danger-outline" id="btn-reset-weak">🗑️ Resetar pontos fracos</button>
+      </div>
+    </section>
+
+    <!-- Fim de sessão -->
+    <div class="modal-overlay" id="session-end-modal" hidden>
+      <div class="modal">
+        <h2 id="session-end-title">Sessão concluída</h2>
+        <p id="session-end-body"></p>
+        <button type="button" class="btn btn-primary" id="session-end-close">Voltar ao início</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

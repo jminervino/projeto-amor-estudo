@@ -1,0 +1,5 @@
+{
+  "name": "carinestudy",
+  "private": true,
+  "description": "Site estático — Vercel trata como Other (sem build). Evita detecção automática de framework."
+}

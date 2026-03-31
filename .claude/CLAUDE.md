@@ -1,7 +1,7 @@
 # CarineStudy — contexto do projeto (leia antes de editar)
 
 ## O que é
-App **estático** de revisão (HTML/CSS/JS). Uma matéria ativa com PDF/clínica; felinos só arquivo; outras `emBreve`. Deploy na **Vercel**, sem bundler.
+App **estático** de revisão (HTML/CSS/JS). Matéria ativa: **Tecnologia de POA I** (`provaAtual`). Felinos e Clínica Médica são `apenasMemoria` (arquivo). Outras `emBreve`. Deploy na **Vercel**, sem bundler.
 
 ## Arquivos (não re-explorar tudo)
 | Arquivo | Papel |

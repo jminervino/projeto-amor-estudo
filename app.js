@@ -365,8 +365,8 @@ function goSubjects() {
   state.materiaId = null;
   state.session = null;
   state.weakOnly = false;
-  const clinica = MATERIAS.clinicaPeqAnimais;
-  if (clinica) applyMateriaTheme(clinica);
+  const poa = MATERIAS.poaTecnologia;
+  if (poa) applyMateriaTheme(poa);
   renderSubjects();
   showView("subjects");
 }
@@ -945,8 +945,8 @@ function init() {
   }
   if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.init();
   wireEvents();
-  const clinica = MATERIAS.clinicaPeqAnimais;
-  if (clinica) applyMateriaTheme(clinica);
+  const poa = MATERIAS.poaTecnologia;
+  if (poa) applyMateriaTheme(poa);
   renderSubjects();
   showView("subjects");
 }

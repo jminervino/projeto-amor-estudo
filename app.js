@@ -151,6 +151,17 @@ function registerWeakTopic(topic) {
   saveProgress();
 }
 
+function reduceWeakTopic(topic) {
+  if (!topic || !state.materiaId) return;
+  const p = getProgress();
+  const cur = p.weakPoints[topic];
+  if (!cur || cur.erros <= 0) return;
+  cur.erros = cur.erros - 1;
+  if (cur.erros <= 0) delete p.weakPoints[topic];
+  else p.weakPoints[topic] = cur;
+  saveProgress();
+}
+
 function recordAnswer(correct) {
   const p = getProgress();
   p.totalRespondidas = (p.totalRespondidas || 0) + 1;
@@ -458,6 +469,7 @@ function advanceFlash(knew) {
   const item = s.items[s.index];
   if (knew) {
     recordAnswer(true);
+    reduceWeakTopic(item.topico);
     showFeedback("flash-feedback", true);
     if (typeof CarineStudyAudio !== "undefined") CarineStudyAudio.success();
   } else {
@@ -572,6 +584,7 @@ function onMcPick(isCorrect, btnEl) {
     registerWeakTopic(q.topico);
   } else {
     btnEl.classList.add("correct", "pulse-green");
+    reduceWeakTopic(q.topico);
   }
 
   recordAnswer(hit);
@@ -823,14 +836,22 @@ function openWeakPanel() {
   const list = document.getElementById("weak-list");
   list.innerHTML = "";
   const topicos = m.topicos || {};
+  const maxErros = entries.length ? entries[0].erros : 1;
   entries.forEach((e) => {
-    const li = document.createElement("li");
-    li.className = "weak-item";
-    li.innerHTML = `
-      <span class="weak-item-name">${escapeHtml(topicos[e.key] || e.key)}</span>
-      <span class="weak-item-count">${e.erros}×</span>
+    const pct = Math.min(100, Math.round((e.erros / Math.max(maxErros, 1)) * 100));
+    const level = e.erros >= 6 ? "level-high" : e.erros >= 3 ? "level-mid" : "level-low";
+    const card = document.createElement("div");
+    card.className = "weak-card";
+    card.innerHTML = `
+      <div class="weak-card-header">
+        <span class="weak-card-name">${escapeHtml(topicos[e.key] || e.key)}</span>
+        <span class="weak-card-badge">${e.erros} erro${e.erros > 1 ? "s" : ""}</span>
+      </div>
+      <div class="weak-card-bar">
+        <div class="weak-card-bar-fill ${level}" style="width:${pct}%"></div>
+      </div>
     `;
-    list.appendChild(li);
+    list.appendChild(card);
   });
 
   const sugWrap = document.getElementById("weak-suggestions");
